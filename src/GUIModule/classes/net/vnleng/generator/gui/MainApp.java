@@ -16,6 +16,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import net.vnleng.generator.data.Project;
 import net.vnleng.generator.data.ints.ResourceType;
 import net.vnleng.generator.data.scl.impls.DataBlockElement;
 import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
@@ -23,6 +24,8 @@ import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
 import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.scl.ints.FunctionResource;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
+import net.vnleng.generator.data.serialization.ProjectUnrecognizedError;
+import net.vnleng.generator.data.serialization.ProjectVersionError;
 import net.vnleng.generator.gui.panels.FrameCreator;
 import net.vnleng.generator.gui.panels.project.ProjectContentPane;
 import net.vnleng.generator.resources.ProjectResourceHandler;
@@ -146,6 +149,38 @@ public class MainApp extends javax.swing.JFrame {
 
     private void OpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenProjectActionPerformed
         // TODO add your handling code here:
+        JFileChooser jfc = new JFileChooser();
+        jfc.setAcceptAllFileFilterUsed(true);
+        FileFilter ff = new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().endsWith(".gtpj");
+            }
+
+            @Override
+            public String getDescription() {
+                return "GTPJ - File di Progetto";
+            }
+        };
+        jfc.setFileFilter(ff);
+        jfc.showOpenDialog(this);
+        File selectedFile = jfc.getSelectedFile();
+        if (selectedFile != null) {
+            String path = selectedFile.getAbsolutePath();
+            try {
+                Project p = ProjectSerializer.deserializeProject(path);
+                sharedData.setOpenedProject(p, true, path);
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile trovare il file progetto.", "File non trovato", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile leggere il file progetto.", "File non leggibile", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            } catch (ProjectUnrecognizedError pue) {
+                JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto\nin quanto risulta danneggiato.", "Progetto non riconosciuto", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+            } catch (ProjectVersionError pve) {
+                JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto in quanto\nrisulta creato con una versione differente.", "Progetto Incompatibile", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            }
+        }
     }//GEN-LAST:event_OpenProjectActionPerformed
 
     private void ExitProgramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitProgramActionPerformed
@@ -292,9 +327,7 @@ public class MainApp extends javax.swing.JFrame {
             }
         }
         try {
-            ProjectSerializer.serializeProject(sharedData.getProject(), filePath);
-        } catch (FileNotFoundException ex) {
-            System.getLogger(MainApp.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            sharedData.save(filePath);
         } catch (IOException ex) {
             System.getLogger(MainApp.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

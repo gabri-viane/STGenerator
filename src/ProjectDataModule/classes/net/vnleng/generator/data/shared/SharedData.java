@@ -4,10 +4,13 @@
  */
 package net.vnleng.generator.data.shared;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import net.vnleng.generator.data.Project;
 import java.util.ArrayList;
 import java.util.List;
 import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.serialization.ProjectSerializer;
 
 /**
  *
@@ -31,10 +34,10 @@ public class SharedData {
 
     public void setOpenedProject(Project p, boolean fromFile, String path) {
         this.p = p;
-        if(fromFile && path != null && !path.isBlank()){
+        if (fromFile && path != null && !path.isBlank()) {
             hasFileAssocieted = true;
             filePath = path;
-        }else{
+        } else {
             hasFileAssocieted = false;
             filePath = null;
         }
@@ -71,6 +74,12 @@ public class SharedData {
         }
     }
 
+    public void save(String filepath) throws FileNotFoundException, IOException {
+        ProjectSerializer.serializeProject(p, filePath);
+        filePath = filepath;
+        hasBeenEdited = false;
+    }
+
     public Project getProject() {
         return p;
     }
@@ -86,6 +95,5 @@ public class SharedData {
     public boolean hasFileAssocieted() {
         return hasFileAssocieted;
     }
-    
 
 }

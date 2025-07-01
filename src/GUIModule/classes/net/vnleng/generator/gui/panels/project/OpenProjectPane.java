@@ -209,23 +209,7 @@ public class OpenProjectPane extends javax.swing.JPanel {
         if ("".equals(text.trim())) {
             return;
         }
-
-        try {
-            Project p = ProjectSerializer.deserializeProject(text);
-            sharedData.setOpenedProject(p, true, text);
-            if (this.listener != null) {
-                listener.onCloseRequest();
-            }
-        } catch (FileNotFoundException ex) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile trovare il file progetto.", "File non trovato", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
-        } catch (IOException ex) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile leggere il file progetto.", "File non leggibile", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
-        } catch (ProjectUnrecognizedError pue) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto\nin quanto risulta danneggiato.", "Progetto non riconosciuto", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
-        } catch (ProjectVersionError pve) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto in quanto\nrisulta creato con una versione differente.", "Progetto Incompatibile", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
-
-        }
+        openProject(text);
     }//GEN-LAST:event_OpenProjectActionPerformed
 
     private void ShowExplorerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShowExplorerActionPerformed
@@ -248,6 +232,7 @@ public class OpenProjectPane extends javax.swing.JPanel {
         File selectedFile = jfc.getSelectedFile();
         if (selectedFile != null) {
             ProjectPathTF.setText(selectedFile.getAbsolutePath());
+            openProject(ProjectPathTF.getText());
         }
     }//GEN-LAST:event_ShowExplorerActionPerformed
 
@@ -280,6 +265,25 @@ public class OpenProjectPane extends javax.swing.JPanel {
 
     public void focus() {
         this.ProjectNameTF.requestFocusInWindow();
+    }
+
+    private void openProject(String path) {
+        try {
+            Project p = ProjectSerializer.deserializeProject(path);
+            sharedData.setOpenedProject(p, true, path);
+            if (this.listener != null) {
+                listener.onCloseRequest();
+            }
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile trovare il file progetto.", "File non trovato", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile leggere il file progetto.", "File non leggibile", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+        } catch (ProjectUnrecognizedError pue) {
+            JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto\nin quanto risulta danneggiato.", "Progetto non riconosciuto", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+        } catch (ProjectVersionError pve) {
+            JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto in quanto\nrisulta creato con una versione differente.", "Progetto Incompatibile", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        }
     }
 
 }
