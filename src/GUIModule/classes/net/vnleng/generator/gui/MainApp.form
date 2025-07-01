@@ -62,6 +62,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Chiudi Progetto"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CloseProjectActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="Sep2">
             </MenuItem>

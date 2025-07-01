@@ -8,6 +8,14 @@
         <Property name="useNullLayout" type="boolean" value="true"/>
       </Layout>
       <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="RenameResource">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Rinomina"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RenameResourceActionPerformed"/>
+          </Events>
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="RemoveResource">
           <Properties>
             <Property name="text" type="java.lang.String" value="Rimuovi elemento"/>
@@ -125,6 +133,7 @@
                 <Component class="javax.swing.JTree" name="ProjectTree">
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ProjectTreeMouseClicked"/>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="ProjectTreeKeyPressed"/>
                   </Events>
                 </Component>
               </SubComponents>

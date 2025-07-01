@@ -4,14 +4,18 @@
  */
 package net.vnleng.generator.gui.panels.project;
 
-import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import net.vnleng.generator.commons.Pair;
 import net.vnleng.generator.data.Project;
 import net.vnleng.generator.data.ints.ResourceElement;
 import net.vnleng.generator.data.shared.SharedData;
+import net.vnleng.generator.gui.renders.ProjectTreeEditor;
 import net.vnleng.generator.gui.renders.ProjectTreeRender;
 
 /**
@@ -42,6 +46,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private void initComponents() {
 
         ResourceContextMenu = new javax.swing.JPopupMenu();
+        RenameResource = new javax.swing.JMenuItem();
         RemoveResource = new javax.swing.JMenuItem();
         TitoloPannello = new javax.swing.JLabel();
         TabbedPane = new javax.swing.JTabbedPane();
@@ -55,6 +60,14 @@ public class ProjectContentPane extends javax.swing.JPanel {
         AddFBButton = new javax.swing.JButton();
         AddDBButton = new javax.swing.JButton();
         PaginaIstanze = new javax.swing.JPanel();
+
+        RenameResource.setText("Rinomina");
+        RenameResource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RenameResourceActionPerformed(evt);
+            }
+        });
+        ResourceContextMenu.add(RenameResource);
 
         RemoveResource.setText("Rimuovi elemento");
         RemoveResource.addActionListener(new java.awt.event.ActionListener() {
@@ -70,6 +83,11 @@ public class ProjectContentPane extends javax.swing.JPanel {
         ProjectTree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 ProjectTreeMouseClicked(evt);
+            }
+        });
+        ProjectTree.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ProjectTreeKeyPressed(evt);
             }
         });
         TreeScrollPane.setViewportView(ProjectTree);
@@ -188,8 +206,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
             if (selectionPath == null) {
                 return;
             }
-            Rectangle pathBounds = ProjectTree.getPathBounds(selectionPath);
-            ProjectTree.getComponentPopupMenu().show(ProjectTree, pathBounds.x, pathBounds.y);
+
+            ProjectTree.getComponentPopupMenu().show(ProjectTree, x, y);
         }
     }//GEN-LAST:event_ProjectTreeMouseClicked
 
@@ -207,6 +225,16 @@ public class ProjectContentPane extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_RemoveResourceActionPerformed
 
+    private void RenameResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RenameResourceActionPerformed
+        ProjectTree.setEditable(true);
+    }//GEN-LAST:event_RenameResourceActionPerformed
+
+    private void ProjectTreeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ProjectTreeKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_F2) {
+            ProjectTree.setEditable(true);
+        }
+    }//GEN-LAST:event_ProjectTreeKeyPressed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel AddButtonsContainer;
     private javax.swing.JButton AddDBButton;
@@ -217,6 +245,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JPanel PagniaOggetti;
     private javax.swing.JTree ProjectTree;
     private javax.swing.JMenuItem RemoveResource;
+    private javax.swing.JMenuItem RenameResource;
     private javax.swing.JPopupMenu ResourceContextMenu;
     private javax.swing.JLabel StructLabel;
     private javax.swing.JTabbedPane TabbedPane;
@@ -231,6 +260,20 @@ public class ProjectContentPane extends javax.swing.JPanel {
         });
         this.sharedData.addProjectEditedEventListener((prj) -> {
             fillProjectTree(prj);
+        });
+        ProjectTree.setCellEditor(new ProjectTreeEditor(ProjectTree));
+        ProjectTree.getCellEditor().addCellEditorListener(new CellEditorListener() {
+            @Override
+            public void editingStopped(ChangeEvent e) {
+                Pair<ResourceElement, String> re = (Pair<ResourceElement, String>) e.getSource();
+                ProjectTree.setEditable(false);
+                sharedData.renameResource(re.left(), re.right());
+            }
+
+            @Override
+            public void editingCanceled(ChangeEvent e) {
+                ProjectTree.setEditable(false);
+            }
         });
     }
 

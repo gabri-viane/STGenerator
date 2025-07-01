@@ -19,7 +19,9 @@ import net.vnleng.generator.data.serialization.ProjectSerializer;
 public class SharedData {
 
     private final List<SharedDataChangeListener<Project>> projectOpenedEventListeners;
+    private final List<SharedDataChangeListener<Project>> projectClosedEventListeners;
     private final List<SharedDataChangeListener<Project>> projectEditedEventListeners;
+    private final List<SharedDataChangeListener<SharedData>> saveEventListeners;
     private boolean hasBeenEdited = false;
 
     private boolean hasFileAssocieted = false;
@@ -29,7 +31,9 @@ public class SharedData {
 
     public SharedData() {
         this.projectOpenedEventListeners = new ArrayList<>();
+        this.projectClosedEventListeners = new ArrayList<>();
         this.projectEditedEventListeners = new ArrayList<>();
+        this.saveEventListeners = new ArrayList<>();
     }
 
     public void setOpenedProject(Project p, boolean fromFile, String path) {
@@ -50,38 +54,88 @@ public class SharedData {
         this.projectOpenedEventListeners.add(listener);
     }
 
+    public void addProjectClosedEventListener(SharedDataChangeListener<Project> listener) {
+        this.projectClosedEventListeners.add(listener);
+    }
+
     public void addProjectEditedEventListener(SharedDataChangeListener<Project> listener) {
         this.projectEditedEventListeners.add(listener);
+    }
+
+    public void addSaveEventListener(SharedDataChangeListener<SharedData> listener) {
+        this.saveEventListeners.add(listener);
     }
 
     public void addResource(ResourceElement re) {
         if (re != null) {
             p.addResource(re);
+            boolean previous = hasBeenEdited;
             this.hasBeenEdited = true;
             List.copyOf(projectEditedEventListeners).forEach((t) -> {
                 t.onChange(p);
             });
+            if (this.hasBeenEdited != previous) {
+                List.copyOf(saveEventListeners).forEach(t -> {
+                    t.onChange(this);
+                });
+            }
+        }
+    }
+
+    public void renameResource(ResourceElement re, String newName) {
+        if (re != null && newName != null && !newName.isBlank()) {
+            p.renameResource(re, newName);
+            boolean previous = hasBeenEdited;
+            this.hasBeenEdited = true;
+            List.copyOf(projectEditedEventListeners).forEach((t) -> {
+                t.onChange(p);
+            });
+            if (this.hasBeenEdited != previous) {
+                List.copyOf(saveEventListeners).forEach(t -> {
+                    t.onChange(this);
+                });
+            }
         }
     }
 
     public void removeResource(ResourceElement re) {
         if (re != null) {
             p.removeResource(re);
+            boolean previous = hasBeenEdited;
             this.hasBeenEdited = true;
             List.copyOf(projectEditedEventListeners).forEach((t) -> {
                 t.onChange(p);
             });
+            if (this.hasBeenEdited != previous) {
+                List.copyOf(saveEventListeners).forEach(t -> {
+                    t.onChange(this);
+                });
+            }
         }
     }
 
     public void save(String filepath) throws FileNotFoundException, IOException {
         ProjectSerializer.serializeProject(p, filePath);
         filePath = filepath;
+        boolean previous = hasBeenEdited;
         hasBeenEdited = false;
+        if (this.hasBeenEdited != previous) {
+            List.copyOf(saveEventListeners).forEach(t -> {
+                t.onChange(this);
+            });
+        }
     }
 
     public Project getProject() {
         return p;
+    }
+
+    public void close() {
+        p = null;
+        hasBeenEdited = false;
+        hasFileAssocieted = false;
+        filePath = null;
+        this.projectClosedEventListeners.forEach(l -> l.onChange(p));
     }
 
     public boolean hasBeenEdited() {

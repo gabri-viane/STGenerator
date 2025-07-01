@@ -4,6 +4,8 @@
  */
 
 module ContentModule {
+    requires CommonsModule;
+    
     exports net.vnleng.generator.data.ints;
     exports net.vnleng.generator.data.scl;
     exports net.vnleng.generator.data.scl.impls;

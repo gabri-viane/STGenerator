@@ -6,4 +6,6 @@
 module CommonsModule {
     exports net.vnleng.generator.commons;
     exports net.vnleng.generator.commons.events;
+    
+    exports net.vnleng.generator.commons.block to ProjectDataModule, ContentModule;
 }

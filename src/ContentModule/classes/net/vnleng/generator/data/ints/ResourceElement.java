@@ -5,13 +5,14 @@
 package net.vnleng.generator.data.ints;
 
 import java.util.Map;
+import net.vnleng.generator.commons.block.KeyLock;
 
 /**
  *
  * @author gabri
  */
 public abstract class ResourceElement implements Resource {
-    
+
     private static final long serialVersionUID = 1L;
     protected String name;
     protected ResourceType rt;
@@ -25,6 +26,12 @@ public abstract class ResourceElement implements Resource {
     @Override
     public final String getName() {
         return this.name;
+    }
+
+    public final void setName(KeyLock k, String name) {
+        if (k != null) {
+            this.name = name;
+        }
     }
 
     @Override

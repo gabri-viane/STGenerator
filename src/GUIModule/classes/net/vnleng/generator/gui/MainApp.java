@@ -120,6 +120,11 @@ public class MainApp extends javax.swing.JFrame {
 
         CloseProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         CloseProject.setText("Chiudi Progetto");
+        CloseProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CloseProjectActionPerformed(evt);
+            }
+        });
         FileMenu.add(CloseProject);
         FileMenu.add(Sep2);
 
@@ -193,6 +198,8 @@ public class MainApp extends javax.swing.JFrame {
                     0, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{undo, saveAndClose, close}, saveAndClose);
             if (showOptionDialog == 1) {
                 saveProject(false);
+            } else if (showOptionDialog == 2) {
+                System.exit(0);
             }
         }
 
@@ -207,6 +214,25 @@ public class MainApp extends javax.swing.JFrame {
         // TODO add your handling code here:
         saveProject(true);
     }//GEN-LAST:event_SaveAsProjectActionPerformed
+
+    private void CloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CloseProjectActionPerformed
+        // TODO add your handling code here:
+        if (sharedData.hasBeenEdited()) {
+            String undo = "Annulla";
+            String saveAndClose = "Salva e Chiudi";
+            String close = "Chiudi";
+            int showOptionDialog = JOptionPane.showOptionDialog(this, "Hai modifiche non salvate.\nVuoi uscire senza salvare?", "Salva Progetto?",
+                    0, JOptionPane.INFORMATION_MESSAGE, null, new String[]{undo, saveAndClose, close}, saveAndClose);
+            if (showOptionDialog == 1) {
+                saveProject(false);
+                sharedData.close();
+            } else if (showOptionDialog == 2) {
+                sharedData.close();
+            }
+        } else {
+            sharedData.close();
+        }
+    }//GEN-LAST:event_CloseProjectActionPerformed
 
     /**
      * @param args the command line arguments
@@ -254,7 +280,12 @@ public class MainApp extends javax.swing.JFrame {
 
     private void initDataListeners() {
         sharedData.addProjectOpenedEventListener((data) -> {
-            this.setTitle(data.getProjectName());
+            if (sharedData.hasBeenEdited()) {
+
+                this.setTitle(data.getProjectName() + "*");
+            } else {
+                this.setTitle(data.getProjectName());
+            }
             if (data.getResources().isEmpty()) {
                 data.addResource(new FunctionBlockElement("Test"));
                 data.addResource(new FunctionElement("Test2"));
@@ -264,6 +295,19 @@ public class MainApp extends javax.swing.JFrame {
                 data.addResource(new DataBlockInstanceElement("Test5", (FunctionResource) data.getResource(ResourceType.Function, "Test4")));
             }
             showProjectContentPane();
+        });
+        sharedData.addSaveEventListener((data) -> {
+            if (data.hasBeenEdited()) {
+                this.setTitle(data.getProject().getProjectName() + "*");
+            } else {
+                this.setTitle(data.getProject().getProjectName());
+            }
+        });
+        sharedData.addProjectClosedEventListener((data) -> {
+            this.setTitle("");
+            this.DesktopPane.removeAll();
+            this.DesktopPane.repaint();
+            this.setupFrontPage();
         });
     }
 

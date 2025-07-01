@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.vnleng.generator.commons.block.KeyLock;
 import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 
 /**
@@ -37,6 +38,13 @@ public class Project implements Serializable {
         resources.put(ResourceType.DataBlock, new HashMap<>());
         resources.put(ResourceType.FunctionBlock, new HashMap<>());
         resources.put(ResourceType.FunctionInstance, new HashMap<>());
+    }
+
+    public void renameResource(ResourceElement re, String newName) {
+        String oldName = re.getName();
+        resources.get(re.getType()).remove(oldName);
+        re.setName(new KeyLock(), newName);
+        resources.get(re.getType()).put(newName, re);
     }
 
     public void addResource(ResourceElement re) {
@@ -86,8 +94,8 @@ public class Project implements Serializable {
         ResourceElement remove = get.remove(re.getName());
         /*
         Rimuovo l'istanza associata anche alla FB o FC se era una DB d'istanza
-        */
-        if(remove == null){
+         */
+        if (remove == null) {
             return;
         }
         if (remove.getType().equals(ResourceType.FunctionInstance)) {
