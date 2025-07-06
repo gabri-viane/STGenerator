@@ -17,6 +17,7 @@ import javax.swing.filechooser.FileFilter;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
 import net.vnleng.generator.data.serialization.ProjectUnrecognizedError;
 import net.vnleng.generator.data.serialization.ProjectVersionError;
+import net.vnleng.generator.resources.TextResources;
 
 /**
  *
@@ -65,9 +66,9 @@ public class OpenProjectPane extends javax.swing.JPanel {
 
         Title.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         Title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Title.setText("Nuovo Progetto");
+        Title.setText(TextResources.GUITextBundle.getString("NewProject"));
 
-        NewLabel.setText("Nome:");
+        NewLabel.setText(TextResources.GUITextBundle.getString("Name"));
 
         ProjectNameTF.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -75,7 +76,7 @@ public class OpenProjectPane extends javax.swing.JPanel {
             }
         });
 
-        GenerateProject.setText("Genera");
+        GenerateProject.setText(TextResources.GUITextBundle.getString("Generate"));
         GenerateProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 GenerateProjectActionPerformed(evt);
@@ -112,11 +113,11 @@ public class OpenProjectPane extends javax.swing.JPanel {
 
         Title1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Title1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Title1.setText("Apri Progetto");
+        Title1.setText(TextResources.GUITextBundle.getString("OpenProject"));
 
-        OpenLabel.setText("Percorso Progetto:");
+        OpenLabel.setText(TextResources.GUITextBundle.getString("ProjectPath")+":");
 
-        OpenProject.setText("Apri");
+        OpenProject.setText(TextResources.GUITextBundle.getString("Open"));
         OpenProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 OpenProjectActionPerformed(evt);
@@ -170,7 +171,7 @@ public class OpenProjectPane extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(Title)
                     .addComponent(NewProjectPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSeparator1)
                     .addComponent(Title1)
                     .addComponent(NewProjectPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
@@ -224,7 +225,7 @@ public class OpenProjectPane extends javax.swing.JPanel {
 
             @Override
             public String getDescription() {
-                return "GTPJ - File di Progetto";
+                return TextResources.GUITextBundle.getString("FileChooserDescription");
             }
         };
         jfc.setFileFilter(ff);
@@ -275,14 +276,17 @@ public class OpenProjectPane extends javax.swing.JPanel {
                 listener.onCloseRequest();
             }
         } catch (FileNotFoundException ex) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile trovare il file progetto.", "File non trovato", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("FileNotFound_Message"),
+                    TextResources.GUITextBundle.getString("FileNotFound_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Non è possibile leggere il file progetto.", "File non leggibile", JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("FileNotReadable_Message"),
+                    TextResources.GUITextBundle.getString("FileNotReadable_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
         } catch (ProjectUnrecognizedError pue) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto\nin quanto risulta danneggiato.", "Progetto non riconosciuto", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("ProjectNotRecognyzed_Message"),
+                    TextResources.GUITextBundle.getString("ProjectNotRecognyzed_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
         } catch (ProjectVersionError pve) {
-            JOptionPane.showConfirmDialog(this.getParent(), "Il file progetto non può essere aperto in quanto\nrisulta creato con una versione differente.", "Progetto Incompatibile", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
-
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("ProjectIncompatible_Message"),
+                    TextResources.GUITextBundle.getString("ProjectIncompatible_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
         }
     }
 

@@ -29,7 +29,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="Title" min="-2" max="-2" attributes="0"/>
                   <Component id="NewProjectPanel" min="-2" max="-2" attributes="0"/>
-                  <Component id="jSeparator1" min="-2" pref="324" max="-2" attributes="0"/>
+                  <Component id="jSeparator1" max="32767" attributes="0"/>
                   <Component id="Title1" min="-2" max="-2" attributes="0"/>
                   <Component id="NewProjectPanel1" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -60,7 +60,9 @@
           <Font name="Segoe UI" size="24" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Nuovo Progetto"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="TextResources.GUITextBundle.getString(&quot;NewProject&quot;)" type="code"/>
+        </Property>
       </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="NewProjectPanel">
@@ -103,7 +105,9 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="NewLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Nome:"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TextResources.GUITextBundle.getString(&quot;Name&quot;)" type="code"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="ProjectNameTF">
@@ -113,7 +117,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="GenerateProject">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Genera"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TextResources.GUITextBundle.getString(&quot;Generate&quot;)" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="GenerateProjectActionPerformed"/>
@@ -129,7 +135,9 @@
           <Font name="Segoe UI" size="14" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Apri Progetto"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="TextResources.GUITextBundle.getString(&quot;OpenProject&quot;)" type="code"/>
+        </Property>
       </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="NewProjectPanel1">
@@ -175,14 +183,18 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="OpenLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Percorso Progetto:"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TextResources.GUITextBundle.getString(&quot;ProjectPath&quot;)+&quot;:&quot;" type="code"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="ProjectPathTF">
         </Component>
         <Component class="javax.swing.JButton" name="OpenProject">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Apri"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TextResources.GUITextBundle.getString(&quot;Open&quot;)" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OpenProjectActionPerformed"/>

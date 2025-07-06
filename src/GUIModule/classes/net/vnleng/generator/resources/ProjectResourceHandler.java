@@ -24,24 +24,24 @@ public class ProjectResourceHandler {
 
     static {
 
-        AppIcon_512 = new ImageIcon(FrameCreator.class.getResource("/net/vnleng/generator/resources/icon.png"));
+        AppIcon_512 = new ImageIcon(FrameCreator.class.getResource("/net/vnleng/generator/resources/images/icon.png"));
         AppIcon_32 = new ImageIcon(AppIcon_512.getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
 
-        Image image = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/ProjectFileIcon.png")).getImage(); // transform it 
+        Image image = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/ProjectFileIcon.png")).getImage(); // transform it 
         Image newimg = image.getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
         ProjectFileIcon_32 = new ImageIcon(newimg);  // transform it back
 
-        FBIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/FBIcon_32.png")); // transform it 
-        FBIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/FBIcon_24.png")); // transform it 
+        FBIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/FBIcon_32.png")); // transform it 
+        FBIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/FBIcon_24.png")); // transform it 
 
-        FCIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/FCIcon_32.png")); // transform it 
-        FCIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/FCIcon_24.png")); // transform it 
+        FCIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/FCIcon_32.png")); // transform it 
+        FCIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/FCIcon_24.png")); // transform it 
 
-        DBIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/DBIcon_32.png")); // transform it 
-        DBIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/DBIcon_24.png")); // transform it 
+        DBIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/DBIcon_32.png")); // transform it 
+        DBIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/DBIcon_24.png")); // transform it 
 
-        DBInstanceIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/DBInstanceIcon_32.png")); // transform it 
-        DBInstanceIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/DBInstanceIcon_24.png")); // transform it 
+        DBInstanceIcon_32 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/DBInstanceIcon_32.png")); // transform it 
+        DBInstanceIcon_24 = new ImageIcon(ProjectResourceHandler.class.getResource("/net/vnleng/generator/resources/images/DBInstanceIcon_24.png")); // transform it 
 
     }
 }

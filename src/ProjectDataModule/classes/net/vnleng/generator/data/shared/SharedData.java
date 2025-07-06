@@ -41,9 +41,11 @@ public class SharedData {
         if (fromFile && path != null && !path.isBlank()) {
             hasFileAssocieted = true;
             filePath = path;
+            hasBeenEdited = false;
         } else {
             hasFileAssocieted = false;
             filePath = null;
+            hasBeenEdited = true;
         }
         List.copyOf(projectOpenedEventListeners).forEach((t) -> {
             t.onChange(p);
@@ -115,7 +117,7 @@ public class SharedData {
     }
 
     public void save(String filepath) throws FileNotFoundException, IOException {
-        ProjectSerializer.serializeProject(p, filePath);
+        ProjectSerializer.serializeProject(p, filepath);
         filePath = filepath;
         boolean previous = hasBeenEdited;
         hasBeenEdited = false;

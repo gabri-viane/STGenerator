@@ -17,6 +17,7 @@ import net.vnleng.generator.data.ints.ResourceElement;
 import net.vnleng.generator.data.shared.SharedData;
 import net.vnleng.generator.gui.renders.ProjectTreeEditor;
 import net.vnleng.generator.gui.renders.ProjectTreeRender;
+import net.vnleng.generator.resources.TextResources;
 
 /**
  *
@@ -48,9 +49,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
         ResourceContextMenu = new javax.swing.JPopupMenu();
         RenameResource = new javax.swing.JMenuItem();
         RemoveResource = new javax.swing.JMenuItem();
-        TitoloPannello = new javax.swing.JLabel();
-        TabbedPane = new javax.swing.JTabbedPane();
-        PagniaOggetti = new javax.swing.JPanel();
+        PaginaIstanze = new javax.swing.JPanel();
+        PaginaOggetti = new javax.swing.JPanel();
         TreeScrollPane = new javax.swing.JScrollPane();
         ProjectTree = new javax.swing.JTree();
         StructLabel = new javax.swing.JLabel();
@@ -59,7 +59,9 @@ public class ProjectContentPane extends javax.swing.JPanel {
         AddFCButton = new javax.swing.JButton();
         AddFBButton = new javax.swing.JButton();
         AddDBButton = new javax.swing.JButton();
-        PaginaIstanze = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        TitoloPannello = new javax.swing.JLabel();
+        TabbedPane = new javax.swing.JTabbedPane();
 
         RenameResource.setText("Rinomina");
         RenameResource.addActionListener(new java.awt.event.ActionListener() {
@@ -77,8 +79,16 @@ public class ProjectContentPane extends javax.swing.JPanel {
         });
         ResourceContextMenu.add(RemoveResource);
 
-        TitoloPannello.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        TitoloPannello.setText("Contenuti del progetto");
+        javax.swing.GroupLayout PaginaIstanzeLayout = new javax.swing.GroupLayout(PaginaIstanze);
+        PaginaIstanze.setLayout(PaginaIstanzeLayout);
+        PaginaIstanzeLayout.setHorizontalGroup(
+            PaginaIstanzeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 563, Short.MAX_VALUE)
+        );
+        PaginaIstanzeLayout.setVerticalGroup(
+            PaginaIstanzeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 336, Short.MAX_VALUE)
+        );
 
         ProjectTree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -92,9 +102,9 @@ public class ProjectContentPane extends javax.swing.JPanel {
         });
         TreeScrollPane.setViewportView(ProjectTree);
 
-        StructLabel.setText("Struttura del progetto:");
+        StructLabel.setText(TextResources.GUITextBundle.getString("ProjectStructure"));
 
-        AddLabel.setText("Aggiungi elementi:");
+        AddLabel.setText(TextResources.GUITextBundle.getString("AddElements"));
 
         AddFCButton.setText("FC");
 
@@ -126,27 +136,45 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout PagniaOggettiLayout = new javax.swing.GroupLayout(PagniaOggetti);
-        PagniaOggetti.setLayout(PagniaOggettiLayout);
-        PagniaOggettiLayout.setHorizontalGroup(
-            PagniaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PagniaOggettiLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PagniaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(PagniaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(StructLabel)
-                        .addComponent(TreeScrollPane)
-                        .addComponent(AddButtonsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(AddLabel))
-                .addContainerGap(317, Short.MAX_VALUE))
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 305, Short.MAX_VALUE)
         );
-        PagniaOggettiLayout.setVerticalGroup(
-            PagniaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PagniaOggettiLayout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout PaginaOggettiLayout = new javax.swing.GroupLayout(PaginaOggetti);
+        PaginaOggetti.setLayout(PaginaOggettiLayout);
+        PaginaOggettiLayout.setHorizontalGroup(
+            PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PaginaOggettiLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(PaginaOggettiLayout.createSequentialGroup()
+                        .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(StructLabel)
+                            .addComponent(TreeScrollPane)
+                            .addComponent(AddButtonsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(PaginaOggettiLayout.createSequentialGroup()
+                        .addComponent(AddLabel)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        PaginaOggettiLayout.setVerticalGroup(
+            PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PaginaOggettiLayout.createSequentialGroup()
                 .addGap(9, 9, 9)
                 .addComponent(StructLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(TreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(TreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(AddLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -154,20 +182,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        TabbedPane.addTab("Oggetti", PagniaOggetti);
-
-        javax.swing.GroupLayout PaginaIstanzeLayout = new javax.swing.GroupLayout(PaginaIstanze);
-        PaginaIstanze.setLayout(PaginaIstanzeLayout);
-        PaginaIstanzeLayout.setHorizontalGroup(
-            PaginaIstanzeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 563, Short.MAX_VALUE)
-        );
-        PaginaIstanzeLayout.setVerticalGroup(
-            PaginaIstanzeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 336, Short.MAX_VALUE)
-        );
-
-        TabbedPane.addTab("Istanze", PaginaIstanze);
+        TitoloPannello.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        TitoloPannello.setText(TextResources.GUITextBundle.getString("ProjectContents"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -242,7 +258,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JButton AddFCButton;
     private javax.swing.JLabel AddLabel;
     private javax.swing.JPanel PaginaIstanze;
-    private javax.swing.JPanel PagniaOggetti;
+    private javax.swing.JPanel PaginaOggetti;
     private javax.swing.JTree ProjectTree;
     private javax.swing.JMenuItem RemoveResource;
     private javax.swing.JMenuItem RenameResource;
@@ -251,6 +267,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JLabel TitoloPannello;
     private javax.swing.JScrollPane TreeScrollPane;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 
     private void initDataListeners() {
@@ -279,6 +296,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
 
     private void initData() {
         fillProjectTree(this.sharedData.getProject());
+        TabbedPane.addTab(TextResources.GUITextBundle.getString("Objects"), PaginaOggetti);
+        TabbedPane.addTab(TextResources.GUITextBundle.getString("Istances"), PaginaIstanze);
     }
 
     private void fillProjectTree(Project prj) {

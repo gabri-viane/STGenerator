@@ -16,7 +16,7 @@ import net.vnleng.generator.resources.ProjectResourceHandler;
 public class FrameCreator {
 
     public static JInternalFrame createFrame(String title, boolean resizable, JComponent content) {
-        JInternalFrame jif = new JInternalFrame("Nuovo progetto", resizable, true, true, true);
+        JInternalFrame jif = new JInternalFrame(title, resizable, true, true, true);
         //Impostazione layout e aggiunta componente
         jif.setLayout(new BorderLayout());
         jif.add(content, BorderLayout.CENTER);
