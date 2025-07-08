@@ -276,17 +276,17 @@ public class OpenProjectPane extends javax.swing.JPanel {
                 listener.onCloseRequest();
             }
         } catch (FileNotFoundException ex) {
-            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("FileNotFound_Message"),
-                    TextResources.GUITextBundle.getString("FileNotFound_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.DialogsTextBundle.getString("FileNotFound_Message"),
+                    TextResources.DialogsTextBundle.getString("FileNotFound_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("FileNotReadable_Message"),
-                    TextResources.GUITextBundle.getString("FileNotReadable_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.DialogsTextBundle.getString("FileNotReadable_Message"),
+                    TextResources.DialogsTextBundle.getString("FileNotReadable_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
         } catch (ProjectUnrecognizedError pue) {
-            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("ProjectNotRecognyzed_Message"),
-                    TextResources.GUITextBundle.getString("ProjectNotRecognyzed_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.DialogsTextBundle.getString("ProjectNotRecognyzed_Message"),
+                    TextResources.DialogsTextBundle.getString("ProjectNotRecognyzed_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
         } catch (ProjectVersionError pve) {
-            JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("ProjectIncompatible_Message"),
-                    TextResources.GUITextBundle.getString("ProjectIncompatible_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showConfirmDialog(this.getParent(), TextResources.DialogsTextBundle.getString("ProjectIncompatible_Message"),
+                    TextResources.DialogsTextBundle.getString("ProjectIncompatible_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
         }
     }
 

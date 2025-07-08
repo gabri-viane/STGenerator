@@ -23,6 +23,7 @@ import net.vnleng.generator.data.serialization.ProjectSerializer;
 import net.vnleng.generator.data.serialization.ProjectUnrecognizedError;
 import net.vnleng.generator.data.serialization.ProjectVersionError;
 import net.vnleng.generator.gui.panels.FrameCreator;
+import net.vnleng.generator.gui.panels.content.FunctionDefinitionPanel;
 import net.vnleng.generator.gui.panels.project.ProjectContentPane;
 import net.vnleng.generator.gui.panels.settings.SettingsPane;
 import net.vnleng.generator.resources.ProjectResourceHandler;
@@ -36,12 +37,14 @@ public class EntryMainApp extends javax.swing.JFrame {
 
     private static final SharedData sharedData = new SharedData();
     private final ResourceBundle TXTbundle;
+    private final ResourceBundle DIAGbundle;
 
     /**
      * Creates new form MainApp
      */
     public EntryMainApp() {
         TXTbundle = TextResources.GUITextBundle;
+        DIAGbundle = TextResources.DialogsTextBundle;
         initComponents();
         enableActions(false);
         initDataListeners();
@@ -162,14 +165,14 @@ public class EntryMainApp extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (sharedData.getProject() == null) {
             showOpenProjectPane();
-        }else{
+        } else {
             int showCloseAndSave = showCloseAndSave();
-            if(showCloseAndSave == 1){
+            if (showCloseAndSave == 1) {
                 saveProject(false);
-            }else if(showCloseAndSave == 0){
+            } else if (showCloseAndSave == 0) {
                 return;
             }
-            sharedData.close();         
+            sharedData.close();
         }
     }//GEN-LAST:event_NewProjectActionPerformed
 
@@ -185,7 +188,7 @@ public class EntryMainApp extends javax.swing.JFrame {
 
             @Override
             public String getDescription() {
-                return TextResources.GUITextBundle.getString("FileChooserDescription");
+                return TXTbundle.getString("FileChooserDescription");
             }
         };
         jfc.setFileFilter(ff);
@@ -197,17 +200,17 @@ public class EntryMainApp extends javax.swing.JFrame {
                 Project p = ProjectSerializer.deserializeProject(path);
                 sharedData.setOpenedProject(p, true, path);
             } catch (FileNotFoundException ex) {
-                JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("FileNotFound_Message"),
-                        TextResources.GUITextBundle.getString("FileNotFound_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showConfirmDialog(this.getParent(), DIAGbundle.getString("FileNotFound_Message"),
+                        DIAGbundle.getString("FileNotFound_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
-                JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("FileNotReadable_Message"),
-                        TextResources.GUITextBundle.getString("FileNotReadable_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showConfirmDialog(this.getParent(), DIAGbundle.getString("FileNotReadable_Message"),
+                        DIAGbundle.getString("FileNotReadable_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
             } catch (ProjectUnrecognizedError pue) {
-                JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("ProjectNotRecognyzed_Message"),
-                        TextResources.GUITextBundle.getString("ProjectNotRecognyzed_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showConfirmDialog(this.getParent(), DIAGbundle.getString("ProjectNotRecognyzed_Message"),
+                        DIAGbundle.getString("ProjectNotRecognyzed_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
             } catch (ProjectVersionError pve) {
-                JOptionPane.showConfirmDialog(this.getParent(), TextResources.GUITextBundle.getString("ProjectIncompatible_Message"),
-                        TextResources.GUITextBundle.getString("ProjectIncompatible_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showConfirmDialog(this.getParent(), DIAGbundle.getString("ProjectIncompatible_Message"),
+                        DIAGbundle.getString("ProjectIncompatible_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
             }
         }
     }//GEN-LAST:event_OpenProjectActionPerformed
@@ -256,7 +259,7 @@ public class EntryMainApp extends javax.swing.JFrame {
     private void SettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SettingsActionPerformed
         // TODO add your handling code here:
         SettingsPane sp = new SettingsPane();
-        JInternalFrame frame = FrameCreator.createFrame(TextResources.GUITextBundle.getString("Settings"), false, sp);
+        JInternalFrame frame = FrameCreator.createFrame(TXTbundle.getString("Settings"), false, sp);
         sp.addCloseRequestListener(() -> {
             frame.setVisible(false);
             this.DesktopPane.remove(frame);
@@ -285,6 +288,7 @@ public class EntryMainApp extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             EntryMainApp app = new EntryMainApp();
             app.setIconImage(ProjectResourceHandler.AppIcon_512.getImage());
+            app.pack();
             app.setVisible(true);
         });
     }
@@ -357,7 +361,7 @@ public class EntryMainApp extends javax.swing.JFrame {
 
     private JInternalFrame showOpenProjectPane() {
         OpenProjectPane content = new OpenProjectPane(sharedData);
-        JInternalFrame jif = FrameCreator.createFrame(TextResources.GUITextBundle.getString("NewProject"), false, content);
+        JInternalFrame jif = FrameCreator.createFrame(TXTbundle.getString("NewProject"), false, content);
         jif.setMaximizable(false);
         jif.setLayer(3);
         this.DesktopPane.add(jif);
@@ -372,7 +376,7 @@ public class EntryMainApp extends javax.swing.JFrame {
 
     private JInternalFrame showProjectContentPane() {
         ProjectContentPane content = new ProjectContentPane(sharedData);
-        JInternalFrame jif = FrameCreator.createFrame(TextResources.GUITextBundle.getString("ProjectStructure_short"), true, content);
+        JInternalFrame jif = FrameCreator.createFrame(TXTbundle.getString("ProjectStructure_short"), true, content);
         jif.setLayer(1);
         this.DesktopPane.add(jif);
         return jif;
@@ -383,6 +387,9 @@ public class EntryMainApp extends javax.swing.JFrame {
         int xpos = (DesktopPane.getWidth() - frame.getWidth()) / 2;
         int ypos = (DesktopPane.getHeight() - frame.getHeight()) / 2;
         frame.setLocation(xpos, ypos);
+
+        JInternalFrame jif = FrameCreator.createFrame("prova", true, new FunctionDefinitionPanel(sharedData, ResourceType.Function, null));
+        DesktopPane.add(jif);
     }
 
     private void saveProject(boolean saveAs) {
@@ -399,7 +406,7 @@ public class EntryMainApp extends javax.swing.JFrame {
 
                 @Override
                 public String getDescription() {
-                    return TextResources.GUITextBundle.getString("FileChooserDescription");
+                    return TXTbundle.getString("FileChooserDescription");
                 }
             });
             int showSaveDialog = jfc.showSaveDialog(this);

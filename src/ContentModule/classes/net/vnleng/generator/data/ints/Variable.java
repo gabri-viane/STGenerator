@@ -4,7 +4,6 @@
  */
 package net.vnleng.generator.data.ints;
 
-import net.vnleng.generator.data.ints.VariableType;
 import java.io.Serializable;
 
 /**
@@ -15,8 +14,8 @@ public class Variable implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String name;
-    private final VariableType type;
+    private String name;
+    private VariableType type;
     private Object defaultValue;
     private String comment;
     //se >0 allora è un array
@@ -55,6 +54,20 @@ public class Variable implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        if(name == null || name.isBlank()){
+            return;
+        }
+        this.name = name;
+    }
+
+    public void setType(VariableType type) {
+        if(type == null){
+            return;
+        }
+        this.type = type;
     }
 
     public VariableType getType() {

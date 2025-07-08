@@ -16,10 +16,12 @@ import net.vnleng.generator.settings.DataInitializer;
 public class TextResources {
 
     public static final ResourceBundle GUITextBundle;
+    public static final ResourceBundle DialogsTextBundle;
 
     static {
         Locale locale = DataInitializer.getInstance().getLocale();
         GUITextBundle = PropertyResourceBundle.getBundle("net.vnleng.generator.resources.i18n.GUITexts", locale);
+        DialogsTextBundle = PropertyResourceBundle.getBundle("net.vnleng.generator.resources.i18n.DialogsTexts", locale);
     }
 
     private TextResources() {
