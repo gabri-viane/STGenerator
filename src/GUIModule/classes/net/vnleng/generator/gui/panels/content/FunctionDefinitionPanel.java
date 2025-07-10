@@ -90,11 +90,13 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
                 VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output");
                 MainTabbedPane.addTab("INOUT", vtcINOUT);
                 if (resType.equals(ResourceType.FunctionBlock)) {
-                    VariableTableCreator vtcSTATIC = new VariableTableCreator("Constant");
-                    MainTabbedPane.addTab("CONST", vtcSTATIC);
+                    VariableTableCreator vtcSTATIC = new VariableTableCreator("Static");
+                    MainTabbedPane.addTab("STATIC", vtcSTATIC);
                 }
                 VariableTableCreator vtcTEMP = new VariableTableCreator("Temp");
                 MainTabbedPane.addTab("TEMP", vtcTEMP);
+                VariableTableCreator vtcSTATIC = new VariableTableCreator("Constant");
+                MainTabbedPane.addTab("CONST", vtcSTATIC);
             }
             break;
             case DataBlock: {
@@ -110,12 +112,10 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
                     MainTabbedPane.addTab("OUT", vtcOUT);
                     VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output");
                     MainTabbedPane.addTab("INOUT", vtcINOUT);
-                    if (funRes.getType().equals(ResourceType.FunctionBlock)) {
-                        VariableTableCreator vtcSTATIC = new VariableTableCreator("Constant");
-                        MainTabbedPane.addTab("CONST", vtcSTATIC);
+                    if (resType.equals(ResourceType.FunctionBlock)) {
+                        VariableTableCreator vtcSTATIC = new VariableTableCreator("Static");
+                        MainTabbedPane.addTab("STATIC", vtcSTATIC);
                     }
-                    VariableTableCreator vtcTEMP = new VariableTableCreator("Temp");
-                    MainTabbedPane.addTab("TEMP", vtcTEMP);
                 }
                 break;
             }
@@ -125,6 +125,6 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
     }
 
     private void saveFunction() {
-        
+
     }
 }

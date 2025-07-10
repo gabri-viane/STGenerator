@@ -16,24 +16,16 @@ public class Variable implements Serializable {
 
     private String name;
     private VariableType type;
+    private final VariableTypeModifier typeModifier;
     private Object defaultValue;
     private String comment;
-    //se >0 allora è un array
-    private int length = 0;
 
     public Variable(String name, VariableType varType) {
         this.name = name;
         this.type = varType;
         this.comment = "";
         this.defaultValue = null;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public int getLength() {
-        return length;
+        this.typeModifier = new VariableTypeModifier();
     }
 
     public void setDefaultValue(Object defaultValue) {
@@ -57,17 +49,21 @@ public class Variable implements Serializable {
     }
 
     public void setName(String name) {
-        if(name == null || name.isBlank()){
+        if (name == null || name.isBlank()) {
             return;
         }
         this.name = name;
     }
 
     public void setType(VariableType type) {
-        if(type == null){
+        if (type == null) {
             return;
         }
         this.type = type;
+    }
+
+    public VariableTypeModifier getModifier() {
+        return this.typeModifier;
     }
 
     public VariableType getType() {
@@ -76,15 +72,27 @@ public class Variable implements Serializable {
 
     public String getDeclaration() {
         StringBuilder sb = new StringBuilder(this.name);
-        sb.append(" : ").append(this.type.toString());
-        if (this.length > 0) {
-            sb.append("[").append(this.length).append("]");
-        }
-        sb.append(";");
+        sb.append(" : ").append(getFullType(this)).append(";");
         if (this.comment != null && !this.comment.isBlank()) {
             sb.append(" //").append(this.comment);
         }
         return sb.toString();
+    }
+
+    public static String getFullType(Variable v) {
+        if (v.typeModifier.isList()) {
+            StringBuilder sb = new StringBuilder(v.type.toString());
+            sb.append("[").append(v.typeModifier.getLength()).append("]");
+            return sb.toString();
+        }
+        if (v.typeModifier.isArray()) {
+            StringBuilder sb = new StringBuilder("Array[");
+            sb.append(v.typeModifier.getStart()).append("..")
+                    .append(v.typeModifier.getStart() + v.typeModifier.getLength())
+                    .append("] of ").append(v.type.toString());
+            return sb.toString();
+        }
+        return v.type.toString();
     }
 
 }

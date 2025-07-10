@@ -10,4 +10,5 @@ module ContentModule {
     exports net.vnleng.generator.data.scl;
     exports net.vnleng.generator.data.scl.impls;
     exports net.vnleng.generator.data.scl.ints;
+    exports net.vnleng.generator.data.errs;
 }
