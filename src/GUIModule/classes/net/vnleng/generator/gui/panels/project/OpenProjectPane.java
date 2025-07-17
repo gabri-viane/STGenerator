@@ -17,13 +17,14 @@ import javax.swing.filechooser.FileFilter;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
 import net.vnleng.generator.data.serialization.ProjectUnrecognizedError;
 import net.vnleng.generator.data.serialization.ProjectVersionError;
+import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.resources.TextResources;
 
 /**
  *
  * @author gabri
  */
-public class OpenProjectPane extends javax.swing.JPanel {
+public class OpenProjectPane extends javax.swing.JPanel implements ClosableFrame {
 
     private final SharedData sharedData;
     private CloseRequestListener listener;
@@ -260,10 +261,6 @@ public class OpenProjectPane extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
 
-    public void addCloseRequestListener(CloseRequestListener crl) {
-        listener = crl;
-    }
-
     public void focus() {
         this.ProjectNameTF.requestFocusInWindow();
     }
@@ -288,6 +285,16 @@ public class OpenProjectPane extends javax.swing.JPanel {
             JOptionPane.showConfirmDialog(this.getParent(), TextResources.DialogsTextBundle.getString("ProjectIncompatible_Message"),
                     TextResources.DialogsTextBundle.getString("ProjectIncompatible_Title"), JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
         }
+    }
+
+    @Override
+    public void addCloseRequestListener(CloseRequestListener crl) {
+        listener = crl;
+    }
+
+    @Override
+    public void removeCloseRequestListener(CloseRequestListener crl) {
+        this.listener = null;
     }
 
 }

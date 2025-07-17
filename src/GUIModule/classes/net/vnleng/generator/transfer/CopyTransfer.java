@@ -179,6 +179,8 @@ public class CopyTransfer {
                 VariableType.LReal;
             case "string" ->
                 VariableType.String;
+            case "wstring" ->
+                VariableType.WString;
             default -> {
                 throw new TypeConversionException(varType);
             }

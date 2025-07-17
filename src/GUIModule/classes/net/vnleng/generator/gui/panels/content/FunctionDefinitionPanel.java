@@ -4,6 +4,7 @@
  */
 package net.vnleng.generator.gui.panels.content;
 
+import net.vnleng.generator.gui.panels.content.vars.VariableTableCreator;
 import java.util.ResourceBundle;
 import net.vnleng.generator.data.ints.ResourceType;
 import net.vnleng.generator.data.scl.ints.FunctionResource;
@@ -81,8 +82,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
 
     private void initPanes() {
         switch (resType) {
-            case Function:
-            case FunctionBlock: {
+            case Function, FunctionBlock -> {
                 VariableTableCreator vtcIN = new VariableTableCreator("Input");
                 MainTabbedPane.addTab("IN", vtcIN);
                 VariableTableCreator vtcOUT = new VariableTableCreator("Output");
@@ -98,13 +98,11 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
                 VariableTableCreator vtcSTATIC = new VariableTableCreator("Constant");
                 MainTabbedPane.addTab("CONST", vtcSTATIC);
             }
-            break;
-            case DataBlock: {
+            case DataBlock ->  {
                 VariableTableCreator vtcSTATIC = new VariableTableCreator("Static");
                 MainTabbedPane.addTab("STATIC", vtcSTATIC);
-                break;
             }
-            case FunctionInstance: {
+            case FunctionInstance ->  {
                 if (funRes != null) {
                     VariableTableCreator vtcIN = new VariableTableCreator("Input");
                     MainTabbedPane.addTab("IN", vtcIN);
@@ -117,10 +115,9 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
                         MainTabbedPane.addTab("STATIC", vtcSTATIC);
                     }
                 }
-                break;
             }
-            default:
-                break;
+            default ->  {
+            }
         }
     }
 

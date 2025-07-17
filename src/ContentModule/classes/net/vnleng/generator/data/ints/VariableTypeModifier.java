@@ -19,6 +19,13 @@ public class VariableTypeModifier {
 
     }
 
+    public void reset() {
+        isArray = false;
+        isList = false;
+        length = 0;
+        start = 0;
+    }
+
     public void setIsArray(boolean isArray, int start, int length) {
         this.isArray = isArray;
         this.isList = false;
@@ -56,6 +63,13 @@ public class VariableTypeModifier {
 
     public int getStart() {
         return start;
+    }
+
+    public void of(Variable v) {
+        this.isArray = v.typeModifier.isArray;
+        this.isList = v.typeModifier.isList;
+        this.length = v.typeModifier.length;
+        this.start = v.typeModifier.start;
     }
 
 }

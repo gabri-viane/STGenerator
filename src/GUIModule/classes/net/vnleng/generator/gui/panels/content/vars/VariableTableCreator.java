@@ -2,19 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package net.vnleng.generator.gui.panels.content;
+package net.vnleng.generator.gui.panels.content.vars;
 
+import java.awt.Dialog;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.JDialog;
 import javax.swing.event.TableModelEvent;
 import net.vnleng.generator.commons.TextToolHandler;
 import net.vnleng.generator.data.ints.Variable;
 import net.vnleng.generator.data.ints.VariableType;
+import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.gui.renders.table.TableRow;
 import net.vnleng.generator.gui.renders.table.VariableTableRender;
 import net.vnleng.generator.gui.renders.table.CustomTableColumn;
@@ -186,6 +190,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
                 //Selected the last row: duplicate the variable and add it
                 Variable row = vtr.getRow(selectedIndex);
                 Variable v = new Variable(TextToolHandler.getNextName(row.getName()), row.getType());
+                v.getModifier().of(row);
                 v.setDefaultValue(row.getDefaultValue());
                 v.setComment(row.getComment());
                 vtr.addRow(v);
@@ -269,6 +274,30 @@ public class VariableTableCreator extends javax.swing.JPanel {
             }
         });
 
+        vtr.setTypeListener((var, varType) -> {
+            if (null == varType) {
+                var.setType(VariableType.Bool);
+                var.getModifier().reset();
+            } else {
+                switch (varType) {
+                    case String, WString -> {
+                        var.setType(varType);
+                        var.getModifier().setIsList(true, 5);
+                        showStringDialog(var);
+                    }
+                    case Array -> {
+                        var.setType(VariableType.Bool);
+                        var.getModifier().setIsArray(true, 0, 10);
+                        showArrayDialog(var);
+                    }
+                    default -> {
+                        var.setType(varType);
+                        var.getModifier().reset();
+                    }
+                }
+            }
+        });
+
         VarTable.setModel(vtr);
         VarTable.getModel().addTableModelListener((TableModelEvent e) -> {
             if (e.getType() == TableModelEvent.INSERT) {
@@ -281,7 +310,6 @@ public class VariableTableCreator extends javax.swing.JPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 TableScrollPane.scrollRectToVisible(VarTable.getCellRect(VarTable.getRowCount() - 1, 0, true));
-
             }
 
             @Override
@@ -315,6 +343,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
             Variable row = vtr.getRow(selectedIndex);
             if (row != null) {
                 Variable v = new Variable(TextToolHandler.getNextName(row.getName()), row.getType());
+                v.getModifier().of(row);
                 v.setDefaultValue(row.getDefaultValue());
                 v.setComment(row.getComment());
                 vtr.addRow(selectedIndex + 1, v);
@@ -347,12 +376,59 @@ public class VariableTableCreator extends javax.swing.JPanel {
             TableEditorPopUp.setVisible(true);
         }
     }
-    
-    private boolean shouldAddVar(){
+
+    private boolean shouldAddVar() {
         Variable lastVar = vtr.getLastRow();
-        if(lastVar == null){
+        if (lastVar == null) {
             return true;
         }
         return !lastVar.getName().isBlank();
+    }
+
+    private Point getSelectionRowPoint() {
+        if (VarTable.getSelectionModel().isSelectionEmpty()) {
+            return null;
+        }
+        Rectangle cellRect = VarTable.getCellRect(VarTable.getSelectedRow(), 1, true);
+        Point p = cellRect.getLocation();
+        p.translate(0, cellRect.y);
+        return p;
+    }
+
+    private void showArrayDialog(Variable v) {
+        showDialog(v, true);
+    }
+
+    private void showStringDialog(Variable v) {
+        showDialog(v, false);
+    }
+
+    private void showDialog(Variable v, boolean array) {
+        JDialog dialog = new JDialog();
+        ClosableFrame cf;
+        if (array) {
+            ArrayVariableDefinition cvd = new ArrayVariableDefinition(v);
+            dialog.add(cvd);
+            cf = cvd;
+        } else {
+            StringVariableDefinition svd = new StringVariableDefinition(v);
+            dialog.add(svd);
+            cf = svd;
+        }
+        cf.addCloseRequestListener(() -> {
+            dialog.setVisible(false);
+            dialog.dispose();
+        });
+        dialog.setUndecorated(true);
+        dialog.pack();
+        Point position = getSelectionRowPoint();
+        if (position != null) {
+            Point p = VarTable.getLocationOnScreen();
+            p.translate(position.x, position.y);
+            dialog.setLocation(p);
+        }
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
     }
 }

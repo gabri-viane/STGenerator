@@ -15,15 +15,15 @@ import net.vnleng.generator.commons.Pair;
 import net.vnleng.generator.data.Project;
 import net.vnleng.generator.data.ints.ResourceElement;
 import net.vnleng.generator.data.shared.SharedData;
-import net.vnleng.generator.gui.renders.ProjectTreeEditor;
-import net.vnleng.generator.gui.renders.ProjectTreeRender;
+import net.vnleng.generator.gui.renders.tree.ProjectTreeEditor;
+import net.vnleng.generator.gui.renders.tree.ProjectTreeRender;
 import net.vnleng.generator.resources.TextResources;
 
 /**
  *
  * @author gabri
  */
-public class ProjectContentPane extends javax.swing.JPanel {
+public class ProjectContentPane extends javax.swing.JPanel{
 
     private final SharedData sharedData;
 

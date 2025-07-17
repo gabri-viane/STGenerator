@@ -16,7 +16,7 @@ public class Variable implements Serializable {
 
     private String name;
     private VariableType type;
-    private final VariableTypeModifier typeModifier;
+    protected final VariableTypeModifier typeModifier;
     private Object defaultValue;
     private String comment;
 

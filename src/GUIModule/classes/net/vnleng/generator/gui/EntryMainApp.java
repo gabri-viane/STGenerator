@@ -3,7 +3,6 @@ package net.vnleng.generator.gui;
 import net.vnleng.generator.data.shared.SharedData;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -29,7 +28,6 @@ import net.vnleng.generator.gui.panels.project.ProjectContentPane;
 import net.vnleng.generator.gui.panels.settings.SettingsPane;
 import net.vnleng.generator.resources.ProjectResourceHandler;
 import net.vnleng.generator.resources.TextResources;
-import net.vnleng.generator.transfer.CopyTransfer;
 
 /**
  *

@@ -15,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
+import net.vnleng.generator.commons.events.ChangeRequest;
 import net.vnleng.generator.data.ints.Variable;
 import net.vnleng.generator.data.ints.VariableType;
 import net.vnleng.generator.resources.TextResources;
@@ -247,7 +248,7 @@ public class VariableTableRender extends AbstractTableModel {
             case 0 ->
                 get.getName();
             case 1 ->
-                get.getType();
+                Variable.getFullType(get);
             case 2 ->
                 get.getDefaultValue();
             case 3 ->
@@ -256,6 +257,9 @@ public class VariableTableRender extends AbstractTableModel {
                 editor.getValueAt(columns.get(columnIndex), get);
         };
     }
+
+    ChangeRequest<Variable, VariableType> changeTypeListener = (t, v) -> {
+    };
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -268,7 +272,7 @@ public class VariableTableRender extends AbstractTableModel {
             }
             case 1 -> {
                 if (aValue instanceof VariableType type) {
-                    variable.setType(type);
+                    changeTypeListener.onChangeRequest(variable, type);
                 }
             }
             case 2 -> {
@@ -287,4 +291,12 @@ public class VariableTableRender extends AbstractTableModel {
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
+    public void setTypeListener(ChangeRequest<Variable, VariableType> reqList) {
+        if (reqList != null) {
+            this.changeTypeListener = reqList;
+        } else {
+            this.changeTypeListener = (t, v) -> {
+            };
+        }
+    }
 }
