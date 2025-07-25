@@ -12,8 +12,11 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import net.vnleng.generator.commons.events.CallbackEventHandler;
+import net.vnleng.generator.commons.events.EventHandler;
 import net.vnleng.generator.data.Project;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.impls.DataBlockElement;
 import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
@@ -72,6 +75,8 @@ public class EntryMainApp extends javax.swing.JFrame {
         Sep2 = new javax.swing.JPopupMenu.Separator();
         ExitProgram = new javax.swing.JMenuItem();
         EditMenu = new javax.swing.JMenu();
+        ResourceDefinitionItem = new javax.swing.JMenuItem();
+        Sep3 = new javax.swing.JPopupMenu.Separator();
         Settings = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -145,6 +150,15 @@ public class EntryMainApp extends javax.swing.JFrame {
         AppMenuBar.add(FileMenu);
 
         EditMenu.setText("Edit");
+
+        ResourceDefinitionItem.setText("Resource Def");
+        ResourceDefinitionItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ResourceDefinitionItemActionPerformed(evt);
+            }
+        });
+        EditMenu.add(ResourceDefinitionItem);
+        EditMenu.add(Sep3);
 
         Settings.setText(TextResources.GUITextBundle.getString("Settings"));
         Settings.addActionListener(new java.awt.event.ActionListener() {
@@ -269,6 +283,14 @@ public class EntryMainApp extends javax.swing.JFrame {
         this.DesktopPane.add(frame);
     }//GEN-LAST:event_SettingsActionPerformed
 
+    private void ResourceDefinitionItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResourceDefinitionItemActionPerformed
+        // TODO add your handling code here:
+        if (sharedData != null && sharedData.getProject() != null) {
+//            JInternalFrame jif = FrameCreator.createFrame("prova", true, new FunctionDefinitionPanel(sharedData, ResourceType.FunctionBlock, null));
+//            DesktopPane.add(jif);
+        }
+    }//GEN-LAST:event_ResourceDefinitionItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -302,10 +324,12 @@ public class EntryMainApp extends javax.swing.JFrame {
     private javax.swing.JMenu FileMenu;
     private javax.swing.JMenuItem NewProject;
     private javax.swing.JMenuItem OpenProject;
+    private javax.swing.JMenuItem ResourceDefinitionItem;
     private javax.swing.JMenuItem SaveAsProject;
     private javax.swing.JMenuItem SaveProject;
     private javax.swing.JPopupMenu.Separator Sep1;
     private javax.swing.JPopupMenu.Separator Sep2;
+    private javax.swing.JPopupMenu.Separator Sep3;
     private javax.swing.JMenuItem Settings;
     // End of variables declaration//GEN-END:variables
 
@@ -375,11 +399,58 @@ public class EntryMainApp extends javax.swing.JFrame {
     }
 
     private JInternalFrame showProjectContentPane() {
-        ProjectContentPane content = new ProjectContentPane(sharedData);
+        EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> eh = new EventHandler<>();
+        eh.addHandler(ResourceType.Function, (element) -> {
+            FunctionElement functionElement;
+            if (element != null) {
+                functionElement = (FunctionElement) element;
+            } else {
+                String name = askResourceName();
+                if (name == null || name.isEmpty()) {
+                    return;
+                }
+                functionElement = new FunctionElement(name);
+            }
+            JInternalFrame jif = FrameCreator.createFrame(functionElement.getName() + "[FC]", true, new FunctionDefinitionPanel(sharedData, functionElement), DesktopPane);
+            jif.setLayer(1);
+        });
+        eh.addHandler(ResourceType.FunctionBlock, (element) -> {
+            FunctionBlockElement functionElement;
+            if (element != null) {
+                functionElement = (FunctionBlockElement) element;
+            } else {
+                String name = askResourceName();
+                if (name == null || name.isEmpty()) {
+                    return;
+                }
+                functionElement = new FunctionBlockElement(name);
+            }
+            JInternalFrame jif = FrameCreator.createFrame(functionElement.getName() + "[FB]", true, new FunctionDefinitionPanel(sharedData, functionElement), DesktopPane);
+            jif.setLayer(1);
+        });
+        eh.addHandler(ResourceType.DataBlock, (element) -> {
+            DataBlockElement dbElement;
+            if (element != null) {
+                dbElement = (DataBlockElement) element;
+            } else {
+                String name = askResourceName();
+                if (name == null || name.isEmpty()) {
+                    return;
+                }
+                dbElement = new DataBlockElement(name);
+            }
+            JInternalFrame jif = FrameCreator.createFrame(dbElement.getName() + "[DB]", true, new FunctionDefinitionPanel(sharedData, dbElement), DesktopPane);
+            jif.setLayer(1);
+        });
+        ProjectContentPane content = new ProjectContentPane(sharedData, eh);
         JInternalFrame jif = FrameCreator.createFrame(TXTbundle.getString("ProjectStructure_short"), true, content);
         jif.setLayer(1);
         this.DesktopPane.add(jif);
         return jif;
+    }
+
+    private String askResourceName() {
+        return JOptionPane.showInputDialog(DIAGbundle.getString("RequestInputName"));
     }
 
     private void setupFrontPage() {
@@ -387,9 +458,6 @@ public class EntryMainApp extends javax.swing.JFrame {
         int xpos = (DesktopPane.getWidth() - frame.getWidth()) / 2;
         int ypos = (DesktopPane.getHeight() - frame.getHeight()) / 2;
         frame.setLocation(xpos, ypos);
-
-        JInternalFrame jif = FrameCreator.createFrame("prova", true, new FunctionDefinitionPanel(sharedData, ResourceType.FunctionBlock, null));
-        DesktopPane.add(jif);
     }
 
     private void saveProject(boolean saveAs) {

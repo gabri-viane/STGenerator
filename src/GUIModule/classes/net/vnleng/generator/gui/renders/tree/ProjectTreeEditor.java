@@ -17,7 +17,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 import net.vnleng.generator.commons.Pair;
-import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceElement;
 
 /**
  *

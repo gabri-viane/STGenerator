@@ -16,8 +16,10 @@ import java.util.ResourceBundle;
 import javax.swing.JDialog;
 import javax.swing.event.TableModelEvent;
 import net.vnleng.generator.commons.TextToolHandler;
-import net.vnleng.generator.data.ints.Variable;
-import net.vnleng.generator.data.ints.VariableType;
+import net.vnleng.generator.data.ints.res.PackType;
+import net.vnleng.generator.data.ints.res.VariablePack;
+import net.vnleng.generator.data.ints.var.Variable;
+import net.vnleng.generator.data.ints.var.VariableType;
 import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.gui.renders.table.TableRow;
 import net.vnleng.generator.gui.renders.table.VariableTableRender;
@@ -32,14 +34,26 @@ public class VariableTableCreator extends javax.swing.JPanel {
 
     private final ResourceBundle TXTBundle;
     private final String varLabelString;
+    private final VariablePack vars;
     private VariableTableRender vtr;
+
+    public VariableTableCreator(String label, VariablePack vars) {
+        this.vars = vars;
+        //Set the text bundle
+        TXTBundle = TextResources.GUITextBundle;
+        //String 
+        varLabelString = label;
+        initComponents();
+        initVariableTableModel();
+    }
 
     /**
      * Creates new form FunctionCreator
      *
      * @param label Title inside of this container set next to the buttons.
      */
-    public VariableTableCreator(String label) {
+    public VariableTableCreator(String label, PackType pt) {
+        this.vars = new VariablePack(pt);
         //Set the text bundle
         TXTBundle = TextResources.GUITextBundle;
         //String 
@@ -129,6 +143,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
 
         add(PanelOptionsIN, java.awt.BorderLayout.NORTH);
 
+        TableScrollPane.setAutoscrolls(true);
         TableScrollPane.setViewportView(VarTable);
 
         VarTable.setComponentPopupMenu(TableEditorPopUp);
@@ -272,7 +287,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
             public boolean isEditable(CustomTableColumn col, Variable rowReference) {
                 return true;
             }
-        });
+        }, vars);
 
         vtr.setTypeListener((var, varType) -> {
             if (null == varType) {

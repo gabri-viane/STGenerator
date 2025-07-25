@@ -1,6 +1,6 @@
 package net.vnleng.generator.data.scl;
 
-import net.vnleng.generator.data.ints.Variable;
+import net.vnleng.generator.data.ints.var.Variable;
 
 /**
  *

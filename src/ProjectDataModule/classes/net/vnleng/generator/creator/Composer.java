@@ -5,8 +5,8 @@
 package net.vnleng.generator.creator;
 
 import net.vnleng.generator.commons.Pair;
-import net.vnleng.generator.data.ints.ResourceElement;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.rules.ints.Rule;
 import net.vnleng.generator.data.rules.ints.RuleType;
 import net.vnleng.generator.data.scl.impls.DataBlockElement;

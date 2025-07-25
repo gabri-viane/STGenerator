@@ -20,8 +20,8 @@ import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 import javax.swing.JTextField;
 import net.vnleng.generator.commons.events.CloseRequestListener;
-import net.vnleng.generator.data.ints.Variable;
-import net.vnleng.generator.data.ints.VariableType;
+import net.vnleng.generator.data.ints.var.Variable;
+import net.vnleng.generator.data.ints.var.VariableType;
 import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.resources.TextResources;
 

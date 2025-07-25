@@ -9,7 +9,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import net.vnleng.generator.data.Project;
-import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.resources.ProjectResourceHandler;
 
 /**

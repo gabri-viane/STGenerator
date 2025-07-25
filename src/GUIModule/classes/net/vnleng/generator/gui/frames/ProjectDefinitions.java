@@ -5,7 +5,7 @@
 package net.vnleng.generator.gui.frames;
 
 import net.vnleng.generator.data.ProjectResource;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.gui.renders.ProjectResourceRender;
 import java.awt.Dimension;
 import java.awt.Image;

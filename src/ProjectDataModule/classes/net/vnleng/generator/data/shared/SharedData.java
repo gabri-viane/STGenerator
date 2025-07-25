@@ -9,7 +9,7 @@ import java.io.IOException;
 import net.vnleng.generator.data.Project;
 import java.util.ArrayList;
 import java.util.List;
-import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
 
 /**

@@ -6,14 +6,21 @@ package net.vnleng.generator.gui.panels.project;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ResourceBundle;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import net.vnleng.generator.commons.Pair;
+import net.vnleng.generator.commons.events.CallbackEventHandler;
+import net.vnleng.generator.commons.events.EventHandler;
 import net.vnleng.generator.data.Project;
-import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
+import net.vnleng.generator.data.scl.impls.DataBlockElement;
+import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
+import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.shared.SharedData;
 import net.vnleng.generator.gui.renders.tree.ProjectTreeEditor;
 import net.vnleng.generator.gui.renders.tree.ProjectTreeRender;
@@ -23,14 +30,17 @@ import net.vnleng.generator.resources.TextResources;
  *
  * @author gabri
  */
-public class ProjectContentPane extends javax.swing.JPanel{
+public class ProjectContentPane extends javax.swing.JPanel {
 
     private final SharedData sharedData;
+    private final EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> handler;
+    private final static ResourceBundle TXTBundle = TextResources.GUITextBundle;
 
     /**
      * Creates new form ProjectContentPane
      */
-    public ProjectContentPane(SharedData data) {
+    public ProjectContentPane(SharedData data, EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> handler) {
+        this.handler = handler;
         this.sharedData = data;
         initComponents();
         initDataListeners();
@@ -49,6 +59,8 @@ public class ProjectContentPane extends javax.swing.JPanel{
         ResourceContextMenu = new javax.swing.JPopupMenu();
         RenameResource = new javax.swing.JMenuItem();
         RemoveResource = new javax.swing.JMenuItem();
+        Sep1 = new javax.swing.JPopupMenu.Separator();
+        ModifyResource = new javax.swing.JMenuItem();
         PaginaIstanze = new javax.swing.JPanel();
         PaginaOggetti = new javax.swing.JPanel();
         TreeScrollPane = new javax.swing.JScrollPane();
@@ -63,7 +75,7 @@ public class ProjectContentPane extends javax.swing.JPanel{
         TitoloPannello = new javax.swing.JLabel();
         TabbedPane = new javax.swing.JTabbedPane();
 
-        RenameResource.setText("Rinomina");
+        RenameResource.setText(TXTBundle.getString("Rename"));
         RenameResource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RenameResourceActionPerformed(evt);
@@ -71,13 +83,22 @@ public class ProjectContentPane extends javax.swing.JPanel{
         });
         ResourceContextMenu.add(RenameResource);
 
-        RemoveResource.setText("Rimuovi elemento");
+        RemoveResource.setText(TXTBundle.getString("Remove"));
         RemoveResource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RemoveResourceActionPerformed(evt);
             }
         });
         ResourceContextMenu.add(RemoveResource);
+        ResourceContextMenu.add(Sep1);
+
+        ModifyResource.setText(TXTBundle.getString("EditResource"));
+        ModifyResource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ModifyResourceActionPerformed(evt);
+            }
+        });
+        ResourceContextMenu.add(ModifyResource);
 
         javax.swing.GroupLayout PaginaIstanzeLayout = new javax.swing.GroupLayout(PaginaIstanze);
         PaginaIstanze.setLayout(PaginaIstanzeLayout);
@@ -107,10 +128,25 @@ public class ProjectContentPane extends javax.swing.JPanel{
         AddLabel.setText(TextResources.GUITextBundle.getString("AddElements"));
 
         AddFCButton.setText("FC");
+        AddFCButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddFCButtonActionPerformed(evt);
+            }
+        });
 
         AddFBButton.setText("FB");
+        AddFBButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddFBButtonActionPerformed(evt);
+            }
+        });
 
         AddDBButton.setText("DB");
+        AddDBButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddDBButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout AddButtonsContainerLayout = new javax.swing.GroupLayout(AddButtonsContainer);
         AddButtonsContainer.setLayout(AddButtonsContainerLayout);
@@ -251,18 +287,51 @@ public class ProjectContentPane extends javax.swing.JPanel{
         }
     }//GEN-LAST:event_ProjectTreeKeyPressed
 
+    private void AddFCButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddFCButtonActionPerformed
+        handler.getSecureHandler(ResourceType.Function).callback(null);
+    }//GEN-LAST:event_AddFCButtonActionPerformed
+
+    private void AddFBButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddFBButtonActionPerformed
+        handler.getSecureHandler(ResourceType.FunctionBlock).callback(null);
+    }//GEN-LAST:event_AddFBButtonActionPerformed
+
+    private void AddDBButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddDBButtonActionPerformed
+        handler.getSecureHandler(ResourceType.DataBlock).callback(null);
+    }//GEN-LAST:event_AddDBButtonActionPerformed
+
+    private void ModifyResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifyResourceActionPerformed
+        if (!ProjectTree.isSelectionEmpty()) {
+            TreePath selectionPath = ProjectTree.getSelectionPath();
+            DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+            Object obj = lastPathComponent.getUserObject();
+            if (obj instanceof Project) {
+                return;
+            }
+            ResourceElement re = (ResourceElement) obj;
+            if (re instanceof FunctionElement) {
+                handler.getHandler(ResourceType.Function).callback(re);
+            } else if (re instanceof FunctionBlockElement) {
+                handler.getHandler(ResourceType.FunctionBlock).callback(re);
+            } else if (re instanceof DataBlockElement) {
+                handler.getHandler(ResourceType.DataBlock).callback(re);
+            }
+        }
+    }//GEN-LAST:event_ModifyResourceActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel AddButtonsContainer;
     private javax.swing.JButton AddDBButton;
     private javax.swing.JButton AddFBButton;
     private javax.swing.JButton AddFCButton;
     private javax.swing.JLabel AddLabel;
+    private javax.swing.JMenuItem ModifyResource;
     private javax.swing.JPanel PaginaIstanze;
     private javax.swing.JPanel PaginaOggetti;
     private javax.swing.JTree ProjectTree;
     private javax.swing.JMenuItem RemoveResource;
     private javax.swing.JMenuItem RenameResource;
     private javax.swing.JPopupMenu ResourceContextMenu;
+    private javax.swing.JPopupMenu.Separator Sep1;
     private javax.swing.JLabel StructLabel;
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JLabel TitoloPannello;

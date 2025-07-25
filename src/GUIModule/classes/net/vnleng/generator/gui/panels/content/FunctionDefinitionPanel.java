@@ -4,31 +4,47 @@
  */
 package net.vnleng.generator.gui.panels.content;
 
+import java.util.HashMap;
 import net.vnleng.generator.gui.panels.content.vars.VariableTableCreator;
 import java.util.ResourceBundle;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.commons.events.CloseRequestListener;
+import net.vnleng.generator.data.ints.res.PackType;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
+import net.vnleng.generator.data.scl.impls.DataBlockElement;
+import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
+import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
+import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.scl.ints.FunctionResource;
 import net.vnleng.generator.data.shared.SharedData;
+import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.resources.TextResources;
 
 /**
  *
  * @author gabri
  */
-public class FunctionDefinitionPanel extends javax.swing.JPanel {
+public class FunctionDefinitionPanel extends javax.swing.JPanel implements ClosableFrame {
 
     private final ResourceBundle TXTBundle;
     private final SharedData data;
+    private final ResourceElement boundedResource;
     private final ResourceType resType;
     private final FunctionResource funRes;
+    private CloseRequestListener listener;
 
     /**
      * Creates new form FunctionDefinitionPanel
      */
-    public FunctionDefinitionPanel(SharedData data, ResourceType rt, FunctionResource fr) {
+    public FunctionDefinitionPanel(SharedData data, ResourceElement re) {
         this.data = data;
-        this.resType = rt;
-        this.funRes = fr;
+        this.resType = re.getType();
+        this.boundedResource = re;
+        if (re.getBounded() instanceof FunctionResource res) {
+            this.funRes = res;
+        } else {
+            this.funRes = null;
+        }
         TXTBundle = TextResources.GUITextBundle;
         initComponents();
         initPanes();
@@ -45,7 +61,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
 
         MainTabbedPane = new javax.swing.JTabbedPane();
         OptionsPane = new javax.swing.JPanel();
-        SaveFunctionBtn = new javax.swing.JButton();
+        SaveBtn = new javax.swing.JButton();
         CancelEditBtn = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
@@ -54,74 +70,175 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel {
         MainTabbedPane.setToolTipText("");
         add(MainTabbedPane, java.awt.BorderLayout.CENTER);
 
-        SaveFunctionBtn.setText("jButton1");
-        SaveFunctionBtn.addActionListener(new java.awt.event.ActionListener() {
+        SaveBtn.setText(TXTBundle.getString("Save"));
+        SaveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveFunctionBtnActionPerformed(evt);
+                SaveBtnActionPerformed(evt);
             }
         });
-        OptionsPane.add(SaveFunctionBtn);
+        OptionsPane.add(SaveBtn);
 
-        CancelEditBtn.setText("jButton1");
+        CancelEditBtn.setText(TXTBundle.getString("Undo"));
         OptionsPane.add(CancelEditBtn);
 
         add(OptionsPane, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void SaveFunctionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveFunctionBtnActionPerformed
+    private void SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveBtnActionPerformed
         // TODO add your handling code here:
-        saveFunction();
-    }//GEN-LAST:event_SaveFunctionBtnActionPerformed
+        save();
+    }//GEN-LAST:event_SaveBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CancelEditBtn;
     private javax.swing.JTabbedPane MainTabbedPane;
     private javax.swing.JPanel OptionsPane;
-    private javax.swing.JButton SaveFunctionBtn;
+    private javax.swing.JButton SaveBtn;
     // End of variables declaration//GEN-END:variables
+
+    private final HashMap<String, VariableTableCreator> tables = new HashMap();
 
     private void initPanes() {
         switch (resType) {
             case Function, FunctionBlock -> {
-                VariableTableCreator vtcIN = new VariableTableCreator("Input");
+                FunctionResource fr = (FunctionResource) boundedResource;
+                VariableTableCreator vtcIN = new VariableTableCreator("Input", fr.getInputs());
                 MainTabbedPane.addTab("IN", vtcIN);
-                VariableTableCreator vtcOUT = new VariableTableCreator("Output");
+                VariableTableCreator vtcOUT = new VariableTableCreator("Output", fr.getOutputs());
                 MainTabbedPane.addTab("OUT", vtcOUT);
-                VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output");
+                VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output", fr.getInout());
                 MainTabbedPane.addTab("INOUT", vtcINOUT);
                 if (resType.equals(ResourceType.FunctionBlock)) {
-                    VariableTableCreator vtcSTATIC = new VariableTableCreator("Static");
+                    VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getStatics());
                     MainTabbedPane.addTab("STATIC", vtcSTATIC);
+                    tables.put("STATIC", vtcSTATIC);
                 }
-                VariableTableCreator vtcTEMP = new VariableTableCreator("Temp");
+                VariableTableCreator vtcTEMP = new VariableTableCreator("Temp", fr.getTemps());
                 MainTabbedPane.addTab("TEMP", vtcTEMP);
-                VariableTableCreator vtcSTATIC = new VariableTableCreator("Constant");
-                MainTabbedPane.addTab("CONST", vtcSTATIC);
+                VariableTableCreator vtcCONST = new VariableTableCreator("Constant", fr.getConsts());
+                MainTabbedPane.addTab("CONST", vtcCONST);
+                tables.put("IN", vtcIN);
+                tables.put("OUT", vtcOUT);
+                tables.put("INOUT", vtcINOUT);
+                tables.put("TEMP", vtcTEMP);
+                tables.put("CONST", vtcCONST);
             }
-            case DataBlock ->  {
-                VariableTableCreator vtcSTATIC = new VariableTableCreator("Static");
+            case DataBlock -> {
+                DataBlockElement fr = (DataBlockElement) boundedResource;
+                VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC));
                 MainTabbedPane.addTab("STATIC", vtcSTATIC);
+                tables.put("STATIC", vtcSTATIC);
             }
-            case FunctionInstance ->  {
+            case FunctionInstance -> {
                 if (funRes != null) {
-                    VariableTableCreator vtcIN = new VariableTableCreator("Input");
+                    DataBlockInstanceElement fr = (DataBlockInstanceElement) boundedResource;
+                    VariableTableCreator vtcIN = new VariableTableCreator("Input", fr.getVariables(PackType.INPUT));
                     MainTabbedPane.addTab("IN", vtcIN);
-                    VariableTableCreator vtcOUT = new VariableTableCreator("Output");
+                    VariableTableCreator vtcOUT = new VariableTableCreator("Output", fr.getVariables(PackType.OUTPUT));
                     MainTabbedPane.addTab("OUT", vtcOUT);
-                    VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output");
+                    VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output", fr.getVariables(PackType.INOUT));
                     MainTabbedPane.addTab("INOUT", vtcINOUT);
                     if (resType.equals(ResourceType.FunctionBlock)) {
-                        VariableTableCreator vtcSTATIC = new VariableTableCreator("Static");
+                        VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC));
                         MainTabbedPane.addTab("STATIC", vtcSTATIC);
+                        tables.put("STATIC", vtcSTATIC);
                     }
+                    tables.put("IN", vtcIN);
+                    tables.put("OUT", vtcOUT);
+                    tables.put("INOUT", vtcINOUT);
                 }
             }
-            default ->  {
+            default -> {
+            }
+        }
+    }
+
+    private void save() {
+        switch (resType) {
+            case Function -> {
+                saveFunction();
+            }
+            case FunctionBlock -> {
+                saveFunctionBlock();
+            }
+            case DataBlock -> {
+
+            }
+            case FunctionInstance -> {
+
+            }
+            default -> {
             }
         }
     }
 
     private void saveFunction() {
+        FunctionElement fn = (FunctionElement) boundedResource;
+//        VariableTableCreator vtc = tables.get("CONST");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addConst(t);
+//        });
+//        vtc = tables.get("TEMP");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addTemp(t);
+//        });
+//        vtc = tables.get("IN");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addInput(t);
+//        });
+//        vtc = tables.get("OUT");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addOutput(t);
+//        });
+//        vtc = tables.get("INOUT");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addInOut(t);
+//        });
+        data.addResource(fn);
+        if (listener != null) {
+            listener.onCloseRequest();
+        }
+    }
 
+    private void saveFunctionBlock() {
+        FunctionBlockElement fn = (FunctionBlockElement) boundedResource;
+//        VariableTableCreator vtc = tables.get("CONST");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addConst(t);
+//        });
+//        vtc = tables.get("STATIC");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addStatic(t);
+//        });
+//        vtc = tables.get("TEMP");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addTemp(t);
+//        });
+//        vtc = tables.get("IN");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addInput(t);
+//        });
+//        vtc = tables.get("OUT");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addOutput(t);
+//        });
+//        vtc = tables.get("INOUT");
+//        vtc.getVariables().forEach((t) -> {
+//            fn.addInOut(t);
+//        });
+        data.addResource(fn);
+        if (listener != null) {
+            listener.onCloseRequest();
+        }
+    }
+
+    @Override
+    public void addCloseRequestListener(CloseRequestListener crl) {
+        this.listener = crl;
+    }
+
+    @Override
+    public void removeCloseRequestListener(CloseRequestListener crl) {
+        this.listener = null;
     }
 }

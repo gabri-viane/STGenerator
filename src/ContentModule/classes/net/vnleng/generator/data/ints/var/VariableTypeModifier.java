@@ -2,14 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package net.vnleng.generator.data.ints;
+package net.vnleng.generator.data.ints.var;
+
+import java.io.Serializable;
 
 /**
  *
  * @author gabri
  */
-public class VariableTypeModifier {
+public class VariableTypeModifier implements Serializable{
 
+    private final static long serialVersionUID = 1L;
+    
     private boolean isList = false;
     private boolean isArray = false;
     private int length = 0;

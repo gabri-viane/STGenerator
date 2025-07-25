@@ -4,8 +4,8 @@
  */
 package net.vnleng.generator.data;
 
-import net.vnleng.generator.data.ints.ResourceElement;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
 
 /**
  *

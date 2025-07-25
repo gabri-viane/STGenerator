@@ -7,7 +7,7 @@ package net.vnleng.generator.data.rules;
 import net.vnleng.generator.data.rules.ints.FunctionCallback;
 import net.vnleng.generator.data.rules.ints.RuleType;
 import net.vnleng.generator.data.rules.ints.Rule;
-import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceElement;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -4,11 +4,11 @@
  */
 package net.vnleng.generator.data.scl.impls;
 
-import net.vnleng.generator.data.ints.Resource;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.Resource;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.DataHandler;
 import net.vnleng.generator.data.scl.ints.SCLInstruction;
-import net.vnleng.generator.data.ints.Variable;
+import net.vnleng.generator.data.ints.var.Variable;
 import java.util.ArrayList;
 import java.util.List;
 

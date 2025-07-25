@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.vnleng.generator.data.errs.TypeConversionException;
-import net.vnleng.generator.data.ints.Variable;
-import net.vnleng.generator.data.ints.VariableType;
+import net.vnleng.generator.data.ints.var.Variable;
+import net.vnleng.generator.data.ints.var.VariableType;
 
 /**
  * Allows to transform data from plain CSV, with tabbed columns, to Variables.

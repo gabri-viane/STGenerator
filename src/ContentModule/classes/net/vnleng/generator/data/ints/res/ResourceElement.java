@@ -2,9 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package net.vnleng.generator.data.ints;
+package net.vnleng.generator.data.ints.res;
 
-import java.util.Map;
 import net.vnleng.generator.commons.block.KeyLock;
 
 /**
@@ -16,12 +15,13 @@ public abstract class ResourceElement implements Resource {
     private static final long serialVersionUID = 1L;
     protected String name;
     protected ResourceType rt;
+    protected ResourceElement bounded = null;
 
     public ResourceElement(ResourceType rt) {
         this.rt = rt;
     }
 
-    public abstract Map<String, Variable> getVariables();
+    public abstract VariablePack getVariables(PackType pt);
 
     @Override
     public final String getName() {
@@ -42,6 +42,10 @@ public abstract class ResourceElement implements Resource {
     @Override
     public final String toString() {
         return getDeclaration() + "\n" + getDefinition();
+    }
+
+    public final ResourceElement getBounded() {
+        return bounded;
     }
 
 }

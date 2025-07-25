@@ -4,7 +4,7 @@
  */
 package net.vnleng.generator.data.rules;
 
-import net.vnleng.generator.data.ints.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceElement;
 
 /**
  *

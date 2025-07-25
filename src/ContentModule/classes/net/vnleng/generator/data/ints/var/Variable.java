@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package net.vnleng.generator.data.ints;
+package net.vnleng.generator.data.ints.var;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.io.Serializable;
  */
 public class Variable implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private String name;
     private VariableType type;
@@ -93,6 +94,30 @@ public class Variable implements Serializable {
             return sb.toString();
         }
         return v.type.toString();
+    }
+
+    public Variable copy() {
+        Variable v = new Variable(name, type);
+        v.comment = comment;
+        v.defaultValue = defaultValue;
+        v.typeModifier.of(this);
+        return v;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Variable v) {
+            return v.name.equals(name) && v.type.equals(type);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 71 * hash + Objects.hashCode(this.name);
+        hash = 71 * hash + Objects.hashCode(this.type);
+        return hash;
     }
 
 }

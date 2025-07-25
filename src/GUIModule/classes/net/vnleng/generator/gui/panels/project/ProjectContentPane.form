@@ -10,7 +10,9 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="RenameResource">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Rinomina"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TXTBundle.getString(&quot;Rename&quot;)" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RenameResourceActionPerformed"/>
@@ -18,10 +20,24 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="RemoveResource">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Rimuovi elemento"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TXTBundle.getString(&quot;Remove&quot;)" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RemoveResourceActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="Sep1">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="ModifyResource">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TXTBundle.getString(&quot;EditResource&quot;)" type="code"/>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ModifyResourceActionPerformed"/>
           </Events>
         </MenuItem>
       </SubComponents>
@@ -151,16 +167,25 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="FC"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AddFCButtonActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="AddFBButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="FB"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AddFBButtonActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="AddDBButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="DB"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AddDBButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

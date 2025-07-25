@@ -5,10 +5,9 @@
 package net.vnleng.generator.data.scl.impls;
 
 import net.vnleng.generator.data.scl.ints.FunctionResource;
-import net.vnleng.generator.data.ints.ResourceType;
-import net.vnleng.generator.data.ints.Variable;
-import java.util.HashMap;
-import java.util.Map;
+import net.vnleng.generator.data.ints.res.ResourceType;
+import net.vnleng.generator.data.ints.res.PackType;
+import net.vnleng.generator.data.ints.res.VariablePack;
 
 /**
  *
@@ -16,7 +15,7 @@ import java.util.Map;
  */
 public class FunctionBlockElement extends FunctionResource {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     public FunctionBlockElement(String name) {
         super(name, ResourceType.FunctionBlock);
@@ -43,13 +42,30 @@ public class FunctionBlockElement extends FunctionResource {
     }
 
     @Override
-    public Map<String, Variable> getVariables() {
-        Map<String, Variable> variables = new HashMap<>();
-        variables.putAll(this.inputs);
-        variables.putAll(this.outputs);
-        variables.putAll(this.outputs);
-        variables.putAll(this.statics);
-        return variables;
+    public VariablePack getVariables(PackType pt) {
+        return switch (pt) {
+            case CONST -> {
+                yield consts;
+            }
+            case INOUT -> {
+                yield inout;
+            }
+            case INPUT -> {
+                yield inputs;
+            }
+            case OUTPUT -> {
+                yield outputs;
+            }
+            case STATIC -> {
+                yield statics;
+            }
+            case TEMP -> {
+                yield temp;
+            }
+            default -> {
+                yield null;
+            }
+        };
     }
 
 }

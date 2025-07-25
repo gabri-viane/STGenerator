@@ -16,8 +16,10 @@ import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import net.vnleng.generator.commons.events.ChangeRequest;
-import net.vnleng.generator.data.ints.Variable;
-import net.vnleng.generator.data.ints.VariableType;
+import net.vnleng.generator.data.ints.res.PackType;
+import net.vnleng.generator.data.ints.res.VariablePack;
+import net.vnleng.generator.data.ints.var.Variable;
+import net.vnleng.generator.data.ints.var.VariableType;
 import net.vnleng.generator.resources.TextResources;
 
 /**
@@ -33,13 +35,22 @@ public class VariableTableRender extends AbstractTableModel {
     private final ResourceBundle TXTBundle;
 
     private final List<CustomTableColumn> columns;
-    private final List<Variable> rows;
+    private final VariablePack rows;
     private final TableRow<Variable> editor;
 
-    public VariableTableRender(TableRow<Variable> cellEditorHandler) {
+    public VariableTableRender(TableRow<Variable> cellEditorHandler, VariablePack boundedRows) {
         TXTBundle = TextResources.GUITextBundle;
         columns = new ArrayList<>();
-        rows = new ArrayList<>();
+        rows = boundedRows;
+        editor = cellEditorHandler;
+        init();
+        this.fireTableRowsUpdated(0, !boundedRows.isEmpty() ? boundedRows.size() - 1 : boundedRows.size());
+    }
+
+    public VariableTableRender(TableRow<Variable> cellEditorHandler, PackType pt) {
+        TXTBundle = TextResources.GUITextBundle;
+        columns = new ArrayList<>();
+        rows = new VariablePack(pt);
         editor = cellEditorHandler;
         init();
     }
@@ -267,7 +278,7 @@ public class VariableTableRender extends AbstractTableModel {
         switch (columnIndex) {
             case 0 -> {
                 if (aValue instanceof String name) {
-                    variable.setName(name);
+                    rows.rename(variable, name);
                 }
             }
             case 1 -> {

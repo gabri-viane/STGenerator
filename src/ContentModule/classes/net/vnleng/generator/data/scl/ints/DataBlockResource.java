@@ -5,12 +5,11 @@
 package net.vnleng.generator.data.scl.ints;
 
 import net.vnleng.generator.data.scl.DataHandler;
-import net.vnleng.generator.data.ints.ResourceElement;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.RetainType;
-import net.vnleng.generator.data.ints.Variable;
-import java.util.HashMap;
-import java.util.Map;
+import net.vnleng.generator.data.ints.res.PackType;
+import net.vnleng.generator.data.ints.res.VariablePack;
 
 /**
  *
@@ -18,23 +17,23 @@ import java.util.Map;
  */
 public abstract class DataBlockResource extends ResourceElement {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     protected boolean optimizedAccess = false;
     protected String version = "0.1";
     protected RetainType retain = RetainType.RETAIN;
 
-    protected Map<String, Variable> variables;
+    protected VariablePack variables;
 
     public DataBlockResource(String name) {
         super(ResourceType.DataBlock);
         super.name = name;
-        this.variables = new HashMap<>();
+        this.variables = new VariablePack(PackType.STATIC);
     }
 
     protected DataBlockResource(String name, ResourceType rt) {
         super(rt);
         super.name = name;
-        this.variables = new HashMap<>();
+        this.variables = new VariablePack(PackType.STATIC);
     }
 
     protected abstract String getDeclarationEnd();
@@ -64,14 +63,14 @@ public abstract class DataBlockResource extends ResourceElement {
     }
 
     @Override
-    public Map<String, Variable> getVariables() {
+    public VariablePack getVariables(PackType pt) {
         return variables;
     }
 
     @Override
     public String getDefinition() {
         StringBuilder sb = new StringBuilder("BEGIN\n");
-        this.variables.values().forEach(v -> {
+        this.variables.iterator().forEachRemaining(v -> {
             sb.append("\t").append(v.getName()).append(" := ").append(DataHandler.computeDefault(v)).append(";\n");
         });
         sb.append("END_DATA_BLOCK");

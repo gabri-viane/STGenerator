@@ -4,11 +4,15 @@
  */
 package net.vnleng.generator.data.scl.impls;
 
-import net.vnleng.generator.data.ints.ResourceType;
-import net.vnleng.generator.data.ints.Variable;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.ints.FunctionResource;
-import java.util.HashMap;
-import java.util.Map;
+import net.vnleng.generator.data.ints.res.PackType;
+import static net.vnleng.generator.data.ints.res.PackType.INOUT;
+import static net.vnleng.generator.data.ints.res.PackType.INPUT;
+import static net.vnleng.generator.data.ints.res.PackType.OUTPUT;
+import static net.vnleng.generator.data.ints.res.PackType.STATIC;
+import static net.vnleng.generator.data.ints.res.PackType.TEMP;
+import net.vnleng.generator.data.ints.res.VariablePack;
 
 /**
  *
@@ -43,13 +47,27 @@ public class FunctionElement extends FunctionResource {
     }
 
     @Override
-    public Map<String, Variable> getVariables() {
-        Map<String, Variable> variables = new HashMap<>();
-        variables.putAll(this.inputs);
-        variables.putAll(this.outputs);
-        variables.putAll(this.outputs);
-        variables.putAll(this.statics);
-        return variables;
+    public VariablePack getVariables(PackType pt) {
+        return switch (pt) {
+            case INOUT -> {
+                yield inout;
+            }
+            case INPUT -> {
+                yield inputs;
+            }
+            case OUTPUT -> {
+                yield outputs;
+            }
+            case STATIC -> {
+                yield statics;
+            }
+            case TEMP -> {
+                yield temp;
+            }
+            default -> {
+                yield null;
+            }
+        };
     }
-    
+
 }

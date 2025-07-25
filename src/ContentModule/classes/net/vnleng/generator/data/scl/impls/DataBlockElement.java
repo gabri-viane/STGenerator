@@ -27,7 +27,7 @@ public class DataBlockElement extends DataBlockResource {
     @Override
     protected String getDeclarationEnd() {
         StringBuilder sb = new StringBuilder("STRUCT\n");
-        this.variables.values().forEach(v -> {
+        this.variables.iterator().forEachRemaining(v -> {
             sb.append("\t").append(v.getDeclaration()).append("\n");
         });
         sb.append("END_STRUCT;\n");

@@ -5,8 +5,11 @@
 package net.vnleng.generator.gui.panels;
 
 import java.awt.BorderLayout;
+import java.beans.PropertyVetoException;
 import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.resources.ProjectResourceHandler;
 
 /**
@@ -26,6 +29,25 @@ public class FrameCreator {
         jif.pack();
         //Imposto visibile
         jif.setVisible(true);
+        return jif;
+    }
+
+    public static JInternalFrame createFrame(String title, boolean resizable, JComponent content, JDesktopPane desktop) {
+        JInternalFrame jif = createFrame(title, resizable, content);
+        if (desktop != null) {
+            if (content instanceof ClosableFrame closableFrame) {
+                closableFrame.addCloseRequestListener(() -> {
+                    jif.setVisible(false);
+                    desktop.remove(jif);
+                });
+            }
+            desktop.add(jif);
+            try {
+                jif.setSelected(true);
+            } catch (PropertyVetoException ex) {
+                System.getLogger(FrameCreator.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
         return jif;
     }
 }

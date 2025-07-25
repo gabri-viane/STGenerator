@@ -5,8 +5,8 @@
 package net.vnleng.generator.data;
 
 import net.vnleng.generator.data.rules.RuleApplier;
-import net.vnleng.generator.data.ints.ResourceElement;
-import net.vnleng.generator.data.ints.ResourceType;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
