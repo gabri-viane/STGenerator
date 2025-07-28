@@ -13,12 +13,12 @@ import java.util.Objects;
  */
 public class Variable implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     private String name;
     private VariableType type;
     protected final VariableTypeModifier typeModifier;
-    private Object defaultValue;
+    private String defaultValue;
     private String comment;
 
     public Variable(String name, VariableType varType) {
@@ -29,7 +29,7 @@ public class Variable implements Serializable {
         this.typeModifier = new VariableTypeModifier();
     }
 
-    public void setDefaultValue(Object defaultValue) {
+    public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
@@ -41,7 +41,7 @@ public class Variable implements Serializable {
         return comment;
     }
 
-    public Object getDefaultValue() {
+    public String getDefaultValue() {
         return defaultValue;
     }
 

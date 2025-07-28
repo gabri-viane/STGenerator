@@ -36,9 +36,11 @@ public class VariableTableCreator extends javax.swing.JPanel {
     private final String varLabelString;
     private final VariablePack vars;
     private VariableTableRender vtr;
+    private final boolean contentEditable;
 
-    public VariableTableCreator(String label, VariablePack vars) {
+    public VariableTableCreator(String label, VariablePack vars, boolean editable) {
         this.vars = vars;
+        this.contentEditable = editable;
         //Set the text bundle
         TXTBundle = TextResources.GUITextBundle;
         //String 
@@ -52,8 +54,9 @@ public class VariableTableCreator extends javax.swing.JPanel {
      *
      * @param label Title inside of this container set next to the buttons.
      */
-    public VariableTableCreator(String label, PackType pt) {
+    public VariableTableCreator(String label, PackType pt, boolean editable) {
         this.vars = new VariablePack(pt);
+        this.contentEditable = editable;
         //Set the text bundle
         TXTBundle = TextResources.GUITextBundle;
         //String 
@@ -271,6 +274,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
         vtr = new VariableTableRender(new TableRow<Variable>() {
             @Override
             public Object getValueAt(CustomTableColumn col, Variable rowValue) {
+                //If this handler is called then a non-default column is being selected
                 switch (col.getColumnName()) {
                     default -> {
                         return null;
@@ -280,20 +284,23 @@ public class VariableTableCreator extends javax.swing.JPanel {
 
             @Override
             public void setValueAt(CustomTableColumn col, Object value, Variable rowReference) {
-
+                //All default columns are already handled
             }
 
             @Override
             public boolean isEditable(CustomTableColumn col, Variable rowReference) {
+                //Every cell should be editable in this context
                 return true;
             }
         }, vars);
 
         vtr.setTypeListener((var, varType) -> {
+            //Listen for any table cell modification
             if (null == varType) {
                 var.setType(VariableType.Bool);
                 var.getModifier().reset();
             } else {
+                //handle string and arrays as they need an additional dialog
                 switch (varType) {
                     case String, WString -> {
                         var.setType(varType);
@@ -315,6 +322,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
 
         VarTable.setModel(vtr);
         VarTable.getModel().addTableModelListener((TableModelEvent e) -> {
+            //Select last row when a new row is added
             if (e.getType() == TableModelEvent.INSERT) {
                 int row = vtr.getRowCount() - 1;
                 VarTable.editCellAt(row, 0);
@@ -324,6 +332,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
         VarTable.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
+                //Scroll down to the last element
                 TableScrollPane.scrollRectToVisible(VarTable.getCellRect(VarTable.getRowCount() - 1, 0, true));
             }
 
@@ -340,18 +349,37 @@ public class VariableTableCreator extends javax.swing.JPanel {
             }
         });
 
-        VarTable.getColumnModel().getColumn(0).setCellEditor(vtr.getColumn(0).getCellEditor());
-        VarTable.getColumnModel().getColumn(1).setCellEditor(vtr.getColumn(1).getCellEditor());
+        /**
+         * Add cell editors for the columns: "name", "type", "start value",
+         * "comment". If this table is opened to edit FB or FC instance then
+         * only the start value should be editable
+         */
+        if (contentEditable) {
+            VarTable.getColumnModel().getColumn(3).setCellEditor(vtr.getColumn(3).getCellEditor());
+            VarTable.getColumnModel().getColumn(0).setCellEditor(vtr.getColumn(0).getCellEditor());
+            VarTable.getColumnModel().getColumn(1).setCellEditor(vtr.getColumn(1).getCellEditor());
+        }
         VarTable.getColumnModel().getColumn(2).setCellEditor(vtr.getColumn(2).getCellEditor());
-        VarTable.getColumnModel().getColumn(3).setCellEditor(vtr.getColumn(3).getCellEditor());
 
         TableEditorPopUp.pack();
+
+        //The buttons should be enaled only for editing resources not linked to
+        //any other resources
+        AddRow.setEnabled(contentEditable);
+        DeleteRow.setEnabled(contentEditable);
+        DuplicateBtn.setEnabled(contentEditable);
+        MoveDownBtn.setEnabled(contentEditable);
+        MoveUpBtn.setEnabled(contentEditable);
     }
 
     public List<Variable> getVariables() {
         return vtr.getVariables();
     }
 
+    /**
+     * Duplicate current row if one is selected: this action adds a new variable
+     * to the resource coping the selected variable
+     */
     private void duplicateCurrent() {
         int selectedIndex = VarTable.getSelectedRow();
         if (selectedIndex > 0 && selectedIndex < vtr.getRowCount()) {//>0 la prima non la posso muovere

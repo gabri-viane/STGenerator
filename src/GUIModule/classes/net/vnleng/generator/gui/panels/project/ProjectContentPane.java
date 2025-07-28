@@ -19,6 +19,7 @@ import net.vnleng.generator.data.Project;
 import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.impls.DataBlockElement;
+import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
 import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.shared.SharedData;
@@ -61,6 +62,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
         RemoveResource = new javax.swing.JMenuItem();
         Sep1 = new javax.swing.JPopupMenu.Separator();
         ModifyResource = new javax.swing.JMenuItem();
+        IstanciateResource = new javax.swing.JMenuItem();
         PaginaIstanze = new javax.swing.JPanel();
         PaginaOggetti = new javax.swing.JPanel();
         TreeScrollPane = new javax.swing.JScrollPane();
@@ -99,6 +101,14 @@ public class ProjectContentPane extends javax.swing.JPanel {
             }
         });
         ResourceContextMenu.add(ModifyResource);
+
+        IstanciateResource.setText("jMenuItem1");
+        IstanciateResource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IstanciateResourceActionPerformed(evt);
+            }
+        });
+        ResourceContextMenu.add(IstanciateResource);
 
         javax.swing.GroupLayout PaginaIstanzeLayout = new javax.swing.GroupLayout(PaginaIstanze);
         PaginaIstanze.setLayout(PaginaIstanzeLayout);
@@ -314,9 +324,26 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 handler.getHandler(ResourceType.FunctionBlock).callback(re);
             } else if (re instanceof DataBlockElement) {
                 handler.getHandler(ResourceType.DataBlock).callback(re);
+            } else if (re instanceof DataBlockInstanceElement) {
+                handler.getHandler(ResourceType.FunctionInstance).callback(re);
             }
         }
     }//GEN-LAST:event_ModifyResourceActionPerformed
+
+    private void IstanciateResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IstanciateResourceActionPerformed
+        if (!ProjectTree.isSelectionEmpty()) {
+            TreePath selectionPath = ProjectTree.getSelectionPath();
+            DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+            Object obj = lastPathComponent.getUserObject();
+            if (obj instanceof Project) {
+                return;
+            }
+            ResourceElement re = (ResourceElement) obj;
+            if ((re instanceof FunctionElement) || (re instanceof FunctionBlockElement)) {
+                handler.getHandler(ResourceType.FunctionInstance).callback(re);
+            }
+        }
+    }//GEN-LAST:event_IstanciateResourceActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel AddButtonsContainer;
@@ -324,6 +351,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JButton AddFBButton;
     private javax.swing.JButton AddFCButton;
     private javax.swing.JLabel AddLabel;
+    private javax.swing.JMenuItem IstanciateResource;
     private javax.swing.JMenuItem ModifyResource;
     private javax.swing.JPanel PaginaIstanze;
     private javax.swing.JPanel PaginaOggetti;

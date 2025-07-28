@@ -4,7 +4,6 @@
  */
 package net.vnleng.generator.gui.panels.content;
 
-import java.util.HashMap;
 import net.vnleng.generator.gui.panels.content.vars.VariableTableCreator;
 import java.util.ResourceBundle;
 import net.vnleng.generator.commons.events.CloseRequestListener;
@@ -13,8 +12,6 @@ import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.impls.DataBlockElement;
 import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
-import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
-import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.scl.ints.FunctionResource;
 import net.vnleng.generator.data.shared.SharedData;
 import net.vnleng.generator.gui.ints.ClosableFrame;
@@ -96,56 +93,55 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     private javax.swing.JButton SaveBtn;
     // End of variables declaration//GEN-END:variables
 
-    private final HashMap<String, VariableTableCreator> tables = new HashMap();
-
+    //private final HashMap<String, VariableTableCreator> tables = new HashMap();
     private void initPanes() {
         switch (resType) {
             case Function, FunctionBlock -> {
                 FunctionResource fr = (FunctionResource) boundedResource;
-                VariableTableCreator vtcIN = new VariableTableCreator("Input", fr.getInputs());
+                VariableTableCreator vtcIN = new VariableTableCreator("Input", fr.getInputs(), true);
                 MainTabbedPane.addTab("IN", vtcIN);
-                VariableTableCreator vtcOUT = new VariableTableCreator("Output", fr.getOutputs());
+                VariableTableCreator vtcOUT = new VariableTableCreator("Output", fr.getOutputs(), true);
                 MainTabbedPane.addTab("OUT", vtcOUT);
-                VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output", fr.getInout());
+                VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output", fr.getInout(), true);
                 MainTabbedPane.addTab("INOUT", vtcINOUT);
                 if (resType.equals(ResourceType.FunctionBlock)) {
-                    VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getStatics());
+                    VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getStatics(), true);
                     MainTabbedPane.addTab("STATIC", vtcSTATIC);
-                    tables.put("STATIC", vtcSTATIC);
+//                    tables.put("STATIC", vtcSTATIC);
                 }
-                VariableTableCreator vtcTEMP = new VariableTableCreator("Temp", fr.getTemps());
+                VariableTableCreator vtcTEMP = new VariableTableCreator("Temp", fr.getTemps(), true);
                 MainTabbedPane.addTab("TEMP", vtcTEMP);
-                VariableTableCreator vtcCONST = new VariableTableCreator("Constant", fr.getConsts());
+                VariableTableCreator vtcCONST = new VariableTableCreator("Constant", fr.getConsts(), true);
                 MainTabbedPane.addTab("CONST", vtcCONST);
-                tables.put("IN", vtcIN);
-                tables.put("OUT", vtcOUT);
-                tables.put("INOUT", vtcINOUT);
-                tables.put("TEMP", vtcTEMP);
-                tables.put("CONST", vtcCONST);
+//                tables.put("IN", vtcIN);
+//                tables.put("OUT", vtcOUT);
+//                tables.put("INOUT", vtcINOUT);
+//                tables.put("TEMP", vtcTEMP);
+//                tables.put("CONST", vtcCONST);
             }
             case DataBlock -> {
                 DataBlockElement fr = (DataBlockElement) boundedResource;
-                VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC));
+                VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC), true);
                 MainTabbedPane.addTab("STATIC", vtcSTATIC);
-                tables.put("STATIC", vtcSTATIC);
+//                tables.put("STATIC", vtcSTATIC);
             }
             case FunctionInstance -> {
                 if (funRes != null) {
                     DataBlockInstanceElement fr = (DataBlockInstanceElement) boundedResource;
-                    VariableTableCreator vtcIN = new VariableTableCreator("Input", fr.getVariables(PackType.INPUT));
+                    VariableTableCreator vtcIN = new VariableTableCreator("Input", fr.getVariables(PackType.INPUT), false);
                     MainTabbedPane.addTab("IN", vtcIN);
-                    VariableTableCreator vtcOUT = new VariableTableCreator("Output", fr.getVariables(PackType.OUTPUT));
+                    VariableTableCreator vtcOUT = new VariableTableCreator("Output", fr.getVariables(PackType.OUTPUT), false);
                     MainTabbedPane.addTab("OUT", vtcOUT);
-                    VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output", fr.getVariables(PackType.INOUT));
+                    VariableTableCreator vtcINOUT = new VariableTableCreator("Input/Output", fr.getVariables(PackType.INOUT), false);
                     MainTabbedPane.addTab("INOUT", vtcINOUT);
                     if (resType.equals(ResourceType.FunctionBlock)) {
-                        VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC));
+                        VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC), false);
                         MainTabbedPane.addTab("STATIC", vtcSTATIC);
-                        tables.put("STATIC", vtcSTATIC);
+//                        tables.put("STATIC", vtcSTATIC);
                     }
-                    tables.put("IN", vtcIN);
-                    tables.put("OUT", vtcOUT);
-                    tables.put("INOUT", vtcINOUT);
+//                    tables.put("IN", vtcIN);
+//                    tables.put("OUT", vtcOUT);
+//                    tables.put("INOUT", vtcINOUT);
                 }
             }
             default -> {
@@ -154,7 +150,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     }
 
     private void save() {
-        switch (resType) {
+        /*switch (resType) {
             case Function -> {
                 saveFunction();
             }
@@ -169,31 +165,26 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
             }
             default -> {
             }
+        }*/
+        data.addResource(boundedResource);
+        if (listener != null) {
+            listener.onCloseRequest();
         }
     }
 
+    /*
     private void saveFunction() {
         FunctionElement fn = (FunctionElement) boundedResource;
-//        VariableTableCreator vtc = tables.get("CONST");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addConst(t);
-//        });
-//        vtc = tables.get("TEMP");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addTemp(t);
-//        });
-//        vtc = tables.get("IN");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addInput(t);
-//        });
-//        vtc = tables.get("OUT");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addOutput(t);
-//        });
-//        vtc = tables.get("INOUT");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addInOut(t);
-//        });
+        
+          VariableTableCreator vtc = tables.get("CONST");
+          vtc.getVariables().forEach((t) -> { fn.addConst(t); }); vtc =
+          tables.get("TEMP"); vtc.getVariables().forEach((t) -> {
+          fn.addTemp(t); }); vtc = tables.get("IN");
+          vtc.getVariables().forEach((t) -> { fn.addInput(t); }); vtc =
+          tables.get("OUT"); vtc.getVariables().forEach((t) -> {
+          fn.addOutput(t); }); vtc = tables.get("INOUT");
+          vtc.getVariables().forEach((t) -> { fn.addInOut(t); });
+         
         data.addResource(fn);
         if (listener != null) {
             listener.onCloseRequest();
@@ -202,35 +193,23 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
 
     private void saveFunctionBlock() {
         FunctionBlockElement fn = (FunctionBlockElement) boundedResource;
-//        VariableTableCreator vtc = tables.get("CONST");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addConst(t);
-//        });
-//        vtc = tables.get("STATIC");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addStatic(t);
-//        });
-//        vtc = tables.get("TEMP");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addTemp(t);
-//        });
-//        vtc = tables.get("IN");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addInput(t);
-//        });
-//        vtc = tables.get("OUT");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addOutput(t);
-//        });
-//        vtc = tables.get("INOUT");
-//        vtc.getVariables().forEach((t) -> {
-//            fn.addInOut(t);
-//        });
+        
+          VariableTableCreator vtc = tables.get("CONST");
+          vtc.getVariables().forEach((t) -> { fn.addConst(t); }); vtc =
+          tables.get("STATIC"); vtc.getVariables().forEach((t) -> {
+          fn.addStatic(t); }); vtc = tables.get("TEMP");
+          vtc.getVariables().forEach((t) -> { fn.addTemp(t); }); vtc =
+          tables.get("IN"); vtc.getVariables().forEach((t) -> { fn.addInput(t);
+          }); vtc = tables.get("OUT"); vtc.getVariables().forEach((t) -> {
+          fn.addOutput(t); }); vtc = tables.get("INOUT");
+          vtc.getVariables().forEach((t) -> { fn.addInOut(t); });
+         
         data.addResource(fn);
         if (listener != null) {
             listener.onCloseRequest();
         }
     }
+     */
 
     @Override
     public void addCloseRequestListener(CloseRequestListener crl) {

@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  */
 public final class VariablePack implements Serializable, Iterable<Variable>, List<Variable> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private final PackType type;
     private final List<Variable> orderedVars;
@@ -89,17 +89,33 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         variables.put(newName, v);
     }
 
-    public void copyOf(VariablePack vp) {
-        variables.clear();
-        orderedVars.clear();
+    public void copyOf(VariablePack vp, boolean clear, boolean keepDefaults) {
+        HashMap<String, String> oldDefaults = new HashMap<>();
+        if (keepDefaults) {
+            variables.forEach((s, v) -> oldDefaults.put(s, v.getDefaultValue()));
+        }
+        if (clear) {
+            variables.clear();
+            orderedVars.clear();
+        }
         if (vp == null || vp.orderedVars.isEmpty()) {
             return;
         }
-        vp.orderedVars.forEach((t) -> {
-            Variable v = t.copy();
-            orderedVars.add(v);
-            variables.put(v.getName(), v);
-        });
+        if (keepDefaults) {
+            vp.orderedVars.forEach((t) -> {
+                Variable v = t.copy();
+                v.setDefaultValue(oldDefaults.getOrDefault(v.getName(), v.getDefaultValue()));
+
+                orderedVars.add(v);
+                variables.put(v.getName(), v);
+            });
+        } else {
+            vp.orderedVars.forEach((t) -> {
+                Variable v = t.copy();
+                orderedVars.add(v);
+                variables.put(v.getName(), v);
+            });
+        }
     }
 
     public boolean removeVariable(Variable v) {
@@ -226,7 +242,7 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
 
     @Override
     public void clear() {
-        copyOf(null);
+        copyOf(null, true, false);
     }
 
     @Override

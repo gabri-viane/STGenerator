@@ -2,6 +2,7 @@ package net.vnleng.generator.gui;
 
 import net.vnleng.generator.data.shared.SharedData;
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -82,11 +83,12 @@ public class EntryMainApp extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(755, 441));
         setName("MainFrame"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(840, 620));
         setSize(new java.awt.Dimension(840, 620));
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         DesktopPane.setAutoscrolls(true);
-        DesktopPane.setMinimumSize(new java.awt.Dimension(755, 418));
+        DesktopPane.setDragMode(javax.swing.JDesktopPane.OUTLINE_DRAG_MODE);
         getContentPane().add(DesktopPane);
 
         FileMenu.setText("File");
@@ -310,6 +312,7 @@ public class EntryMainApp extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             EntryMainApp app = new EntryMainApp();
             app.setIconImage(ProjectResourceHandler.AppIcon_512.getImage());
+            app.setPreferredSize(new Dimension(1280, 720));
             app.pack();
             app.setVisible(true);
         });
@@ -349,14 +352,6 @@ public class EntryMainApp extends javax.swing.JFrame {
                 this.setTitle(data.getProjectName() + "*");
             } else {
                 this.setTitle(data.getProjectName());
-            }
-            if (data.getResources().isEmpty()) {
-                data.addResource(new FunctionBlockElement("Test"));
-                data.addResource(new FunctionElement("Test2"));
-                data.addResource(new FunctionElement("Test3"));
-                data.addResource(new FunctionElement("Test4"));
-                data.addResource(new DataBlockElement("Test5"));
-                data.addResource(new DataBlockInstanceElement("Test5", (FunctionResource) data.getResource(ResourceType.Function, "Test4")));
             }
             showProjectContentPane();
             enableActions(true);
@@ -440,6 +435,27 @@ public class EntryMainApp extends javax.swing.JFrame {
                 dbElement = new DataBlockElement(name);
             }
             JInternalFrame jif = FrameCreator.createFrame(dbElement.getName() + "[DB]", true, new FunctionDefinitionPanel(sharedData, dbElement), DesktopPane);
+            jif.setLayer(1);
+        });
+        eh.addHandler(ResourceType.FunctionInstance, (element) -> {
+            DataBlockInstanceElement dbielement = switch (element) {
+                case FunctionResource fr -> {
+                    String name = askResourceName();
+                    if (name == null || name.isEmpty()) {
+                        yield null;
+                    }
+                    dbielement = new DataBlockInstanceElement(name, fr);
+                    yield dbielement;
+                }
+                case DataBlockInstanceElement dataBlockInstanceElement ->
+                    dataBlockInstanceElement;
+                default ->
+                    null;
+            };
+            if (dbielement == null) {
+                return;
+            }
+            JInternalFrame jif = FrameCreator.createFrame(dbielement.getName() + "[DB]", true, new FunctionDefinitionPanel(sharedData, dbielement), DesktopPane);
             jif.setLayer(1);
         });
         ProjectContentPane content = new ProjectContentPane(sharedData, eh);

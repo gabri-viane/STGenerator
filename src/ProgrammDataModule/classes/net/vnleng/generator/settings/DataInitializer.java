@@ -39,7 +39,6 @@ public class DataInitializer {
             l = Locale.getDefault();
         }
         pfs.put("locale", l.toLanguageTag());
-
     }
 
     public Locale getLocale() {

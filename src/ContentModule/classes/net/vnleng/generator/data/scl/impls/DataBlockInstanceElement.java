@@ -25,6 +25,7 @@ import net.vnleng.generator.data.ints.res.VariablePack;
  */
 public class DataBlockInstanceElement extends DataBlockResource implements Reloadable {
 
+    private static final long serialVersionUID = 3L;
     private final FunctionResource bindedFunction;
 
     public DataBlockInstanceElement(String name, FunctionResource function) {
@@ -53,7 +54,7 @@ public class DataBlockInstanceElement extends DataBlockResource implements Reloa
      * il valore di default.
      * @param value Il valore da impostare.
      */
-    public void setVariableDefaultValue(Variable v, Object value) {
+    public void setVariableDefaultValue(Variable v, String value) {
         if (v == null) {
             return;
         }
@@ -65,11 +66,12 @@ public class DataBlockInstanceElement extends DataBlockResource implements Reloa
 
     @Override
     public final void reload() {
-        variables.copyOf(bindedFunction.getInputs());
-        variables.copyOf(bindedFunction.getOutputs());
-        variables.copyOf(bindedFunction.getInout());
-        variables.copyOf(bindedFunction.getConsts());
-        variables.copyOf(bindedFunction.getStatics());
+        variables.copyOf(bindedFunction.getInputs(), false,true);
+        variables.copyOf(bindedFunction.getOutputs(), false,true);
+        variables.copyOf(bindedFunction.getInout(), false,true);
+        variables.copyOf(bindedFunction.getConsts(), false,true);
+        variables.copyOf(bindedFunction.getStatics(), false,true);
+        bounded = bindedFunction;
     }
 
     public FunctionResource getBindedFunction() {
