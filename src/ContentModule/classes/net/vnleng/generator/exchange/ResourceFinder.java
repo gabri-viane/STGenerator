@@ -14,25 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.vnleng.generator.data.ints.res;
+package net.vnleng.generator.exchange;
+
+import net.vnleng.generator.data.ints.res.ResourceElement;
 
 /**
- * Rappresenta un tipo di {@link  VariablePack} possibile.
  *
  * @author gabri
  */
-public enum PackType {
-    INPUT("Input"), OUTPUT("Output"), INOUT("InOut"), TEMP("Temp"), CONST("Constant"), STATIC("Static"), GENERIC("Generic");
-
-    private final String type;
-
-    private PackType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return type;
-    }
-
+public interface ResourceFinder {
+    public ResourceElement find(String name);
 }

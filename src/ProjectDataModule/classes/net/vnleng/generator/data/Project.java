@@ -43,7 +43,7 @@ public class Project implements Serializable {
     public void renameResource(ResourceElement re, String newName) {
         String oldName = re.getName();
         resources.get(re.getType()).remove(oldName);
-        re.setName(new KeyLock(), newName);
+        re.setName(KeyLock.KEY, newName);
         resources.get(re.getType()).put(newName, re);
     }
 

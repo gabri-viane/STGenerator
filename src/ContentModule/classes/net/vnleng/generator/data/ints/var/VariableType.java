@@ -1,12 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package net.vnleng.generator.data.ints.var;
 
 import java.io.Serializable;
 
 /**
+ * Indica i possibili tipi di variabili con l'agginta di "Array", "Variabile" e
+ * "Tag" per permettere comodamente di scegliere da un'unica enum il tipo di
+ * variabile a cui si riferisce.
+ * <p>
+ * Questa classe è serializzabile.
+ * </p>
  *
  * @author gabri
  */

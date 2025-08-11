@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package net.vnleng.generator.data.scl.impls;
 
 import net.vnleng.generator.data.ints.res.ResourceType;
@@ -12,9 +8,11 @@ import static net.vnleng.generator.data.ints.res.PackType.INPUT;
 import static net.vnleng.generator.data.ints.res.PackType.OUTPUT;
 import static net.vnleng.generator.data.ints.res.PackType.STATIC;
 import static net.vnleng.generator.data.ints.res.PackType.TEMP;
+import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.ints.res.VariablePack;
 
 /**
+ * Rappresenta una FC.
  *
  * @author gabri
  */
@@ -68,6 +66,37 @@ public class FunctionElement extends FunctionResource {
                 yield null;
             }
         };
+    }
+
+    @Override
+    public ResourceElement clone() {
+        FunctionElement fbe = new FunctionElement(name);
+        fbe.bounded = this.bounded;
+        this.networks.forEach(n -> fbe.networks.add(n.clone()));
+        fbe.rt = this.rt;
+        fbe.inout.copyOf(inout, true, false);
+        fbe.inputs.copyOf(inputs, true, false);
+        fbe.outputs.copyOf(outputs, true, false);
+        fbe.statics.copyOf(statics, true, false);
+        fbe.temp.copyOf(temp, true, false);
+        return fbe;
+    }
+    
+        @Override
+    public void restore(ResourceElement resourceFrom) {
+        if (resourceFrom.getType() != ResourceType.Function) {
+            return;
+        }
+        FunctionElement fbe = (FunctionElement) resourceFrom;
+        this.bounded = fbe.bounded;
+        this.name = fbe.name;
+        this.rt = fbe.rt;
+        fbe.inout.copyOf(inout, true, false);
+        fbe.inputs.copyOf(inputs, true, false);
+        fbe.outputs.copyOf(outputs, true, false);
+        fbe.statics.copyOf(statics, true, false);
+        fbe.temp.copyOf(temp, true, false);
+
     }
 
 }

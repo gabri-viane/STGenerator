@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package net.vnleng.generator.data.scl.impls;
 
 import net.vnleng.generator.data.ints.res.Resource;
@@ -11,19 +7,24 @@ import net.vnleng.generator.data.scl.ints.SCLInstruction;
 import net.vnleng.generator.data.ints.var.Variable;
 import java.util.ArrayList;
 import java.util.List;
+import net.vnleng.generator.data.errs.ResourceNotFound;
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.exchange.ResourceFinder;
 
 /**
+ * Rappresenta una chiamata a funzione FC o FB. Viene usata per generare dei
+ * segmenti di chiamata.
  *
  * @author gabri
  */
 public class FunctionCallInstruction implements SCLInstruction {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    private Resource callingFunction;
+    private String callingFunction;
     private boolean hasDBInstance;
 
-    private Resource bindedDB;
+    private String bindedDB;
     private List<Variable> callParameters;
 
     public FunctionCallInstruction(Resource FunctionInstance) {
@@ -31,7 +32,7 @@ public class FunctionCallInstruction implements SCLInstruction {
                 && !FunctionInstance.getType().equals(ResourceType.FunctionBlock)) {
             throw new RuntimeException("Expected Function or FunctionBlock call. Found : " + FunctionInstance.getType().name());
         }
-        this.callingFunction = FunctionInstance;
+        this.callingFunction = FunctionInstance.getName();
         this.callParameters = new ArrayList<>();
     }
 
@@ -41,7 +42,7 @@ public class FunctionCallInstruction implements SCLInstruction {
             this.hasDBInstance = false;
             return;
         }
-        this.bindedDB = DB;
+        this.bindedDB = DB.getName();
         this.hasDBInstance = true;
     }
 
@@ -64,12 +65,21 @@ public class FunctionCallInstruction implements SCLInstruction {
     }
 
     @Override
-    public String getInstruction() {
+    public String getInstruction(ResourceFinder rf) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("CALL \"").append(this.callingFunction.getName()).append("\"");
+        ResourceElement cllFnc = rf.find(this.callingFunction);
+        if (cllFnc == null) {
+            throw new ResourceNotFound("The Function (FB or FC) resource of this Function Call Instruction couldn't be found with the provided ResourceFinder.");
+        }
+
+        sb.append("CALL \"").append(cllFnc.getName()).append("\"");
         if (this.hasDBInstance) {
-            sb.append(", \"").append(this.bindedDB.getName()).append("\"");
+            ResourceElement bndDB = rf.find(this.bindedDB);
+            if (bndDB == null) {
+                throw new ResourceNotFound("The binded DB resource to this Function Call Instruction couldn't be found with the provided ResourceFinder.");
+            }
+            sb.append(", \"").append(bndDB.getName()).append("\"");
         }
         if (!this.callParameters.isEmpty()) {
             sb.append("\t( ");
@@ -92,6 +102,25 @@ public class FunctionCallInstruction implements SCLInstruction {
             sb.append(";");
         }
         return sb.toString();
+    }
+
+    @Override
+    public SCLInstruction clone() {
+        FunctionElement tempFunction = new FunctionElement("Temp");
+        FunctionCallInstruction fci = new FunctionCallInstruction(tempFunction);
+        fci.callingFunction = this.callingFunction;
+        fci.bindedDB = this.bindedDB;
+        this.callParameters.forEach(v -> fci.addCallParameter(v.copy()));
+        return fci;
+    }
+
+    @Override
+    public void restore(SCLInstruction resourceFrom) {
+        if (resourceFrom instanceof FunctionCallInstruction fci) {
+            fci.callingFunction = this.callingFunction;
+            fci.bindedDB = this.bindedDB;
+            this.callParameters = fci.callParameters;
+        }
     }
 
 }

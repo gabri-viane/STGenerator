@@ -9,5 +9,10 @@ package net.vnleng.generator.commons.block;
  * @author gabri
  */
 public class KeyLock {
-    
+
+    public static final KeyLock KEY = new KeyLock();
+
+    private KeyLock() {
+
+    }
 }

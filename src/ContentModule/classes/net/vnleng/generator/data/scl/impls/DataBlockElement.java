@@ -1,9 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package net.vnleng.generator.data.scl.impls;
 
+import net.vnleng.generator.data.ints.res.ResourceElement;
+import net.vnleng.generator.data.ints.res.ResourceType;
 import net.vnleng.generator.data.scl.ints.DataBlockResource;
 
 /**
@@ -34,4 +32,32 @@ public class DataBlockElement extends DataBlockResource {
         return sb.toString();
     }
 
+    @Override
+    public ResourceElement clone() {
+        DataBlockElement dbe = new DataBlockElement(name);
+        dbe.bounded = this.bounded;
+        dbe.optimizedAccess = this.optimizedAccess;
+        dbe.retain = this.retain;
+        dbe.rt = this.rt;
+        dbe.variables.copyOf(this.variables, true, false);
+        dbe.version = this.version;
+        return dbe;
+    }
+
+    @Override
+    public void restore(ResourceElement resourceFrom) {
+        if(resourceFrom.getType() != ResourceType.DataBlock){
+            return;
+        }
+        DataBlockElement dbe = (DataBlockElement) resourceFrom;
+        this.name = dbe.name;
+        this.optimizedAccess = dbe.optimizedAccess;
+        this.retain = dbe.retain;
+        this.rt = dbe.rt;
+        this.version = dbe.version;
+        this.variables = dbe.variables;
+    }
+
+    
+    
 }

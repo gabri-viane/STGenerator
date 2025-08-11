@@ -25,8 +25,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Consumer;
+import net.vnleng.generator.commons.block.KeyLock;
 
 /**
+ * Questa classse gestisce gli insiemi di {@link Variable} garantendono
+ * l'unicità per nome. La classe è sia una {@link List} che una {@link HashMap}
+ * in modo tale da poter effettuare una ricerca per nome oppure per ordinamento.
+ * <p>
+ * Questa classe assicura che le variabili inserite siano univoche di nome e
+ * fornisce metodi di aggiunta e rimozione per garantirlo. Inoltre, per evitare
+ * discrepanze viene messo a disposizione un metodo per rinominare una variabile
+ * aggiornando così anche la lista interna e verificando che non sia presente
+ * una stessa variabile.<br/>
+ * Variabili con lo stesso nome vengono sovrascritte.
+ * </p>
+ * <p>
+ * Tramite il metodo {@link #copyOf(net.vnleng.generator.data.ints.res.VariablePack, boolean, boolean)
+ * } è possibile copiare le variabili di questa classe duplicando tutte le
+ * istanze.
+ * </p>
+ *
+ * <p>
+ * Questo inoltre permette di iterare la lista di variabili o di inserirle in
+ * una certa posizione, se desiderato.
+ * </p>
+ * <p>
+ * Per comodità viene utilizzata la enum {@link PackType} per identificare di
+ * che tipologia di pacchetto è questa lista di variabili.
+ * </p>
+ *
  *
  * @author gabri
  */
@@ -34,10 +61,25 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
 
     private static final long serialVersionUID = 2L;
 
+    /**
+     * Tipologia di lista d'appartenenza delle variabili.
+     */
     private final PackType type;
+    /**
+     * Lista delle variabili in modo da poter sfruttare un ordinamento
+     * sequenziale.
+     */
     private final List<Variable> orderedVars;
+    /**
+     * Mappa delel variabili per poter inserire e gestirele per nome.
+     */
     private final HashMap<String, Variable> variables;
 
+    /**
+     * Crea una nuova istanza per gestire delle variabili.
+     *
+     * @param type Il tipo di lista che rappresenta.
+     */
     public VariablePack(PackType type) {
         this.type = type;
         this.orderedVars = new ArrayList<>();
@@ -62,6 +104,14 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         return true;
     }
 
+    /**
+     * Aggiunge una variabile alla posizione desiderata.
+     *
+     * @param v Variabile da aggiungere
+     * @param index Posizione a cui aggiungere la variabile
+     * @return Restituisce la precedente variabile oppure {@code null} se la
+     * posizione non è valida o non è presente una variabile.
+     */
     public Variable add(Variable v, int index) {
         if (v == null || index < -1 || index > orderedVars.size()) {
             return null;
@@ -79,9 +129,19 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         return old;
     }
 
+    /**
+     * Rinomina una variabile assicurandosi di aggiornare i valori e di non
+     * avere variabili con lo stesso nome.
+     * <br/>
+     * Nel caso di duplicati la variabile già presente verrà sovrascritta con
+     * quella nuova.
+     *
+     * @param v Variabile da rinominare.
+     * @param newName Nuovo nome della variabile.
+     */
     public void rename(Variable v, String newName) {
         Variable remove = variables.remove(v.getName());
-        v.setName(newName);
+        v.setName(KeyLock.KEY, newName);
         if (remove == null) {
             add(v);
             return;
@@ -89,6 +149,18 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         variables.put(newName, v);
     }
 
+    /**
+     * Crea una copia di un {@link VariablePack} duplicando tutti i valori e
+     * inserendoli in questa istanza. Se la variabile {@code keepDefualts} è
+     * impostata a {@code true} allora se è presente già in questa lista una
+     * variabile con lo stesso nome viene mantenuto il valore precedente di
+     * default.
+     *
+     * @param vp Lista da cui copiare i contenuti
+     * @param clear Se vale {@code true} allora esegue un reset della lista
+     * prima di copiare le variabili.
+     * @param keepDefaults Mantiene i default delle variabili presenti.
+     */
     public void copyOf(VariablePack vp, boolean clear, boolean keepDefaults) {
         HashMap<String, String> oldDefaults = new HashMap<>();
         if (keepDefaults) {
@@ -118,6 +190,12 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         }
     }
 
+    /**
+     * Rimuove una variabile aggiornando la lista.
+     *
+     * @param v La variabile da rimuovere.
+     * @return {@code true} se la variabile è stata rimossa.
+     */
     public boolean removeVariable(Variable v) {
         if (v == null) {
             return false;
@@ -131,6 +209,12 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         return false;
     }
 
+    /**
+     * Rimuove una variabile usando la posizione nella lista e aggiornandola.
+     *
+     * @param index L'indice della variabile da rimuovere.
+     * @return {@code true} se la variabile è stata rimossa.
+     */
     public Variable removeVariable(int index) {
         if (index < 0 || index >= variables.size()) {
             return null;
@@ -143,6 +227,12 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         return remove;
     }
 
+    /**
+     * Prende una variabile tramite il suo nome.
+     *
+     * @param name Il nome della variabile da prendere.
+     * @return La variabile, se trovata, altrimenti {code null}.
+     */
     public Variable get(String name) {
         return variables.get(name);
     }
@@ -152,6 +242,11 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
         return orderedVars.get(index);
     }
 
+    /**
+     * Restituisce il tipo di lista.
+     *
+     * @return Tipo di pacchetto di variabili.
+     */
     public PackType getType() {
         return type;
     }

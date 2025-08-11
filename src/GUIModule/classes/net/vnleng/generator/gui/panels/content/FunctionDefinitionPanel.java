@@ -25,6 +25,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
 
     private final ResourceBundle TXTBundle;
     private final SharedData data;
+    private final ResourceElement backupBoundedResource;
     private final ResourceElement boundedResource;
     private final ResourceType resType;
     private final FunctionResource funRes;
@@ -37,6 +38,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
         this.data = data;
         this.resType = re.getType();
         this.boundedResource = re;
+        this.backupBoundedResource = re.clone();
         if (re.getBounded() instanceof FunctionResource res) {
             this.funRes = res;
         } else {
@@ -76,6 +78,11 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
         OptionsPane.add(SaveBtn);
 
         CancelEditBtn.setText(TXTBundle.getString("Undo"));
+        CancelEditBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CancelEditBtnActionPerformed(evt);
+            }
+        });
         OptionsPane.add(CancelEditBtn);
 
         add(OptionsPane, java.awt.BorderLayout.PAGE_END);
@@ -86,6 +93,12 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
         save();
     }//GEN-LAST:event_SaveBtnActionPerformed
 
+    private void CancelEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelEditBtnActionPerformed
+        // TODO add your handling code here:
+        boundedResource.restore(backupBoundedResource);
+        listener.onCloseRequest();
+    }//GEN-LAST:event_CancelEditBtnActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CancelEditBtn;
     private javax.swing.JTabbedPane MainTabbedPane;
@@ -93,7 +106,6 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     private javax.swing.JButton SaveBtn;
     // End of variables declaration//GEN-END:variables
 
-    //private final HashMap<String, VariableTableCreator> tables = new HashMap();
     private void initPanes() {
         switch (resType) {
             case Function, FunctionBlock -> {
@@ -107,23 +119,16 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
                 if (resType.equals(ResourceType.FunctionBlock)) {
                     VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getStatics(), true);
                     MainTabbedPane.addTab("STATIC", vtcSTATIC);
-//                    tables.put("STATIC", vtcSTATIC);
                 }
                 VariableTableCreator vtcTEMP = new VariableTableCreator("Temp", fr.getTemps(), true);
                 MainTabbedPane.addTab("TEMP", vtcTEMP);
                 VariableTableCreator vtcCONST = new VariableTableCreator("Constant", fr.getConsts(), true);
                 MainTabbedPane.addTab("CONST", vtcCONST);
-//                tables.put("IN", vtcIN);
-//                tables.put("OUT", vtcOUT);
-//                tables.put("INOUT", vtcINOUT);
-//                tables.put("TEMP", vtcTEMP);
-//                tables.put("CONST", vtcCONST);
             }
             case DataBlock -> {
                 DataBlockElement fr = (DataBlockElement) boundedResource;
                 VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC), true);
                 MainTabbedPane.addTab("STATIC", vtcSTATIC);
-//                tables.put("STATIC", vtcSTATIC);
             }
             case FunctionInstance -> {
                 if (funRes != null) {
@@ -137,11 +142,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
                     if (resType.equals(ResourceType.FunctionBlock)) {
                         VariableTableCreator vtcSTATIC = new VariableTableCreator("Static", fr.getVariables(PackType.STATIC), false);
                         MainTabbedPane.addTab("STATIC", vtcSTATIC);
-//                        tables.put("STATIC", vtcSTATIC);
                     }
-//                    tables.put("IN", vtcIN);
-//                    tables.put("OUT", vtcOUT);
-//                    tables.put("INOUT", vtcINOUT);
                 }
             }
             default -> {
@@ -150,66 +151,11 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     }
 
     private void save() {
-        /*switch (resType) {
-            case Function -> {
-                saveFunction();
-            }
-            case FunctionBlock -> {
-                saveFunctionBlock();
-            }
-            case DataBlock -> {
-
-            }
-            case FunctionInstance -> {
-
-            }
-            default -> {
-            }
-        }*/
         data.addResource(boundedResource);
         if (listener != null) {
             listener.onCloseRequest();
         }
     }
-
-    /*
-    private void saveFunction() {
-        FunctionElement fn = (FunctionElement) boundedResource;
-        
-          VariableTableCreator vtc = tables.get("CONST");
-          vtc.getVariables().forEach((t) -> { fn.addConst(t); }); vtc =
-          tables.get("TEMP"); vtc.getVariables().forEach((t) -> {
-          fn.addTemp(t); }); vtc = tables.get("IN");
-          vtc.getVariables().forEach((t) -> { fn.addInput(t); }); vtc =
-          tables.get("OUT"); vtc.getVariables().forEach((t) -> {
-          fn.addOutput(t); }); vtc = tables.get("INOUT");
-          vtc.getVariables().forEach((t) -> { fn.addInOut(t); });
-         
-        data.addResource(fn);
-        if (listener != null) {
-            listener.onCloseRequest();
-        }
-    }
-
-    private void saveFunctionBlock() {
-        FunctionBlockElement fn = (FunctionBlockElement) boundedResource;
-        
-          VariableTableCreator vtc = tables.get("CONST");
-          vtc.getVariables().forEach((t) -> { fn.addConst(t); }); vtc =
-          tables.get("STATIC"); vtc.getVariables().forEach((t) -> {
-          fn.addStatic(t); }); vtc = tables.get("TEMP");
-          vtc.getVariables().forEach((t) -> { fn.addTemp(t); }); vtc =
-          tables.get("IN"); vtc.getVariables().forEach((t) -> { fn.addInput(t);
-          }); vtc = tables.get("OUT"); vtc.getVariables().forEach((t) -> {
-          fn.addOutput(t); }); vtc = tables.get("INOUT");
-          vtc.getVariables().forEach((t) -> { fn.addInOut(t); });
-         
-        data.addResource(fn);
-        if (listener != null) {
-            listener.onCloseRequest();
-        }
-    }
-     */
 
     @Override
     public void addCloseRequestListener(CloseRequestListener crl) {

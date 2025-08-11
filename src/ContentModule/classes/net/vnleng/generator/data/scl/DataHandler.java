@@ -13,17 +13,20 @@ public class DataHandler {
     }
 
     public static Object getValue(Variable v) {
-        if(v == null){
+        if (v == null) {
             return null;
         }
         return switch (v.getType()) {
-            case Variable -> "#" + v.getName();
-            case Tag -> "\"" + v.getName() + "\"";
-            default -> computeDefault(v);
+            case Variable ->
+                "#" + v.getName();
+            case Tag ->
+                "\"" + v.getName() + "\"";
+            default ->
+                computeDefault(v);
         };
     }
 
-    public static Object computeDefault(Variable v) {
+    public static String computeDefault(Variable v) {
         if (v == null) {
             return null;
         }
@@ -35,13 +38,13 @@ public class DataHandler {
                 return "FALSE";
             }
             case DInt, DWord, Int, Sint, UDInt, UInt, USInt, Word, Byte -> {
-                return 0;
+                return "0";
             }
             case Char, String -> {
                 return "''";
             }
             case LReal, Real -> {
-                return 0.0d;
+                return "0.0";
             }
             default -> {
                 return null;
