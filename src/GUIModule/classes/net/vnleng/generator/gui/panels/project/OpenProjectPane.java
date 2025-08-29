@@ -19,6 +19,7 @@ import net.vnleng.generator.data.serialization.ProjectUnrecognizedError;
 import net.vnleng.generator.data.serialization.ProjectVersionError;
 import net.vnleng.generator.gui.ints.ClosableFrame;
 import net.vnleng.generator.resources.TextResources;
+import net.vnleng.generator.settings.DataInitializer;
 
 /**
  *
@@ -215,7 +216,7 @@ public class OpenProjectPane extends javax.swing.JPanel implements ClosableFrame
     }//GEN-LAST:event_OpenProjectActionPerformed
 
     private void ShowExplorerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShowExplorerActionPerformed
-        // TODO add your handling code here:
+        DataInitializer di  = DataInitializer.getInstance();
         JFileChooser jfc = new JFileChooser();
         jfc.setAcceptAllFileFilterUsed(true);
         FileFilter ff = new FileFilter() {
@@ -229,10 +230,12 @@ public class OpenProjectPane extends javax.swing.JPanel implements ClosableFrame
                 return TextResources.GUITextBundle.getString("FileChooserDescription");
             }
         };
+        jfc.setCurrentDirectory(new File(di.getOpenPath()));
         jfc.setFileFilter(ff);
         jfc.showOpenDialog(this);
         File selectedFile = jfc.getSelectedFile();
         if (selectedFile != null) {
+            di.setOpenPath(selectedFile.getParent());
             ProjectPathTF.setText(selectedFile.getAbsolutePath());
             openProject(ProjectPathTF.getText());
         }

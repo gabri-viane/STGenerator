@@ -32,6 +32,7 @@ public class DataInitializer {
 
     private void setDefaults() {
         pfs.put("locale", Locale.getDefault().toLanguageTag());
+        pfs.put("openpath",System.getProperty("user.home"));
     }
 
     public void setLocale(Locale l) {
@@ -41,6 +42,13 @@ public class DataInitializer {
         pfs.put("locale", l.toLanguageTag());
     }
 
+    public void setOpenPath(String path){
+        if(path == null){
+            path = System.getProperty("user.home");
+        }
+        pfs.put("openpath",path);
+    }
+    
     public Locale getLocale() {
         String getloc = pfs.get("locale", null);
         if (getloc == null) {
@@ -49,6 +57,15 @@ public class DataInitializer {
             return l;
         }
         return Locale.forLanguageTag(getloc);
+    }
+    
+    public String getOpenPath() {
+        String getloc = pfs.get("openpath", null);
+        if (getloc == null) {
+            setOpenPath(null);
+            return getloc;
+        }
+        return getloc;
     }
 
     public static DataInitializer getInstance() {

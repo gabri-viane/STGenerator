@@ -6,6 +6,8 @@ package net.vnleng.generator.gui.panels.project;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -404,13 +406,57 @@ public class ProjectContentPane extends javax.swing.JPanel {
         treeModel = new DefaultTreeModel(root);
         ProjectTree.setCellRenderer(new ProjectTreeRender());
         ProjectTree.setRootVisible(true);
-        prj.getResources().values().forEach(map -> {
-            map.forEach((string, element) -> {
-                root.add(new DefaultMutableTreeNode(element));
+
+        Map<ResourceType, Map<String, ResourceElement>> mp = prj.getResources();
+        Map<ResourceElement, List<ResourceElement>> binds = prj.getBindedResources();
+
+        AtomicPath ap = new AtomicPath();
+
+        mp.forEach((rt, map) -> {
+            if (rt == ResourceType.FunctionInstance) {
+                return;
+            }
+            map.forEach((resname, element) -> {
+                var treeElem = new DefaultMutableTreeNode(element);
+                root.add(treeElem);
+                if (binds.containsKey(element)) {
+                    List<ResourceElement> instances = binds.get(element);
+                    instances.forEach(in -> {
+                        var leafElem = new DefaultMutableTreeNode(in);
+                        treeElem.add(leafElem);
+                        if (in == prj.getLastEdited()) {
+                            ap.setTp(leafElem);
+                        }
+                    });
+                }
+                if (element == prj.getLastEdited()) {
+                    ap.setTp(treeElem);
+                }
             });
         });
+
         ProjectTree.setModel(treeModel);
         ProjectTree.setShowsRootHandles(true);
+        if (ap.getTp() != null) {
+            ProjectTree.setSelectionPath(new TreePath(ap.tn.getPath()));
+        }
+    }
+
+    private class AtomicPath {
+
+        DefaultMutableTreeNode tn = null;
+
+        protected AtomicPath() {
+        }
+
+        public void setTp(DefaultMutableTreeNode tp) {
+            this.tn = tp;
+        }
+
+        public DefaultMutableTreeNode getTp() {
+            return tn;
+        }
+
     }
 
 }

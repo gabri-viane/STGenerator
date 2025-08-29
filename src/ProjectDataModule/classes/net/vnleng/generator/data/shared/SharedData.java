@@ -121,6 +121,7 @@ public class SharedData {
         filePath = filepath;
         boolean previous = hasBeenEdited;
         hasBeenEdited = false;
+        this.hasFileAssocieted = true;
         if (this.hasBeenEdited != previous) {
             List.copyOf(saveEventListeners).forEach(t -> {
                 t.onChange(this);

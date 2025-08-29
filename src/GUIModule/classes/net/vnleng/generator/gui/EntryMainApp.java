@@ -32,6 +32,7 @@ import net.vnleng.generator.gui.panels.project.ProjectContentPane;
 import net.vnleng.generator.gui.panels.settings.SettingsPane;
 import net.vnleng.generator.resources.ProjectResourceHandler;
 import net.vnleng.generator.resources.TextResources;
+import net.vnleng.generator.settings.DataInitializer;
 
 /**
  *
@@ -193,7 +194,7 @@ public class EntryMainApp extends javax.swing.JFrame {
     }//GEN-LAST:event_NewProjectActionPerformed
 
     private void OpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenProjectActionPerformed
-        // TODO add your handling code here:
+        DataInitializer di = DataInitializer.getInstance();
         JFileChooser jfc = new JFileChooser();
         jfc.setAcceptAllFileFilterUsed(true);
         FileFilter ff = new FileFilter() {
@@ -207,11 +208,13 @@ public class EntryMainApp extends javax.swing.JFrame {
                 return TXTbundle.getString("FileChooserDescription");
             }
         };
+        jfc.setCurrentDirectory(new File(di.getOpenPath()));
         jfc.setFileFilter(ff);
         jfc.showOpenDialog(this);
         File selectedFile = jfc.getSelectedFile();
         if (selectedFile != null) {
             String path = selectedFile.getAbsolutePath();
+            di.setOpenPath(selectedFile.getParent());
             try {
                 Project p = ProjectSerializer.deserializeProject(path);
                 sharedData.setOpenedProject(p, true, path);
