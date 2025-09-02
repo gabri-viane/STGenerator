@@ -6,6 +6,7 @@ package net.vnleng.generator.gui.panels.content;
 
 import net.vnleng.generator.gui.panels.content.vars.VariableTableCreator;
 import java.util.ResourceBundle;
+import net.vnleng.generator.commons.events.CallbackEventHandler;
 import net.vnleng.generator.commons.events.CloseRequestListener;
 import net.vnleng.generator.data.ints.res.PackType;
 import net.vnleng.generator.data.ints.res.ResourceElement;
@@ -15,13 +16,14 @@ import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 import net.vnleng.generator.data.scl.ints.FunctionResource;
 import net.vnleng.generator.data.shared.SharedData;
 import net.vnleng.generator.gui.ints.ClosableFrame;
+import net.vnleng.generator.gui.ints.SaveHandler;
 import net.vnleng.generator.resources.TextResources;
 
 /**
  *
  * @author gabri
  */
-public class FunctionDefinitionPanel extends javax.swing.JPanel implements ClosableFrame {
+public class FunctionDefinitionPanel extends javax.swing.JPanel implements ClosableFrame, SaveHandler<ResourceElement> {
 
     private final ResourceBundle TXTBundle;
     private final SharedData data;
@@ -30,6 +32,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     private final ResourceType resType;
     private final FunctionResource funRes;
     private CloseRequestListener listener;
+    private CallbackEventHandler<ResourceElement> saveListener;
 
     /**
      * Creates new form FunctionDefinitionPanel
@@ -39,6 +42,8 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
         this.resType = re.getType();
         this.boundedResource = re;
         this.backupBoundedResource = re.clone();
+        this.saveListener = (element) -> {
+        };
         if (re.getBounded() instanceof FunctionResource res) {
             this.funRes = res;
         } else {
@@ -91,6 +96,7 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     private void SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveBtnActionPerformed
         // TODO add your handling code here:
         save();
+        saveListener.callback(boundedResource);
     }//GEN-LAST:event_SaveBtnActionPerformed
 
     private void CancelEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelEditBtnActionPerformed
@@ -165,5 +171,15 @@ public class FunctionDefinitionPanel extends javax.swing.JPanel implements Closa
     @Override
     public void removeCloseRequestListener(CloseRequestListener crl) {
         this.listener = null;
+    }
+
+    @Override
+    public void setOnSaveListener(CallbackEventHandler<ResourceElement> callback) {
+        if (callback == null) {
+            this.saveListener = (element) -> {
+            };
+            return;
+        }
+        this.saveListener = callback;
     }
 }

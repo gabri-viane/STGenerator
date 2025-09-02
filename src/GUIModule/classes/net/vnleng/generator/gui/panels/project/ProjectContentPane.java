@@ -104,7 +104,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
         });
         ResourceContextMenu.add(ModifyResource);
 
-        IstanciateResource.setText("jMenuItem1");
+        IstanciateResource.setText(TXTBundle.getString("IstantiateResource")
+        );
         IstanciateResource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 IstanciateResourceActionPerformed(evt);
@@ -268,10 +269,21 @@ public class ProjectContentPane extends javax.swing.JPanel {
             }
             ProjectTree.setSelectionPath(selectionPath);
             if (selectionPath == null) {
+                evt.consume();
                 return;
             }
-
+            Object comp = ((DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getUserObject();
+            if (comp instanceof Project) {
+                ProjectTree.getComponentPopupMenu().setVisible(false);
+                return;
+            }
+            if ((comp instanceof FunctionElement) || (comp instanceof FunctionBlockElement)) {
+                IstanciateResource.setEnabled(true);
+            } else {
+                IstanciateResource.setEnabled(false);
+            }
             ProjectTree.getComponentPopupMenu().show(ProjectTree, x, y);
+            evt.consume();
         }
     }//GEN-LAST:event_ProjectTreeMouseClicked
 

@@ -33,7 +33,7 @@ public class ResourceCloneList implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String title = "Instances of ";
-    private final Map<String, CloneData> clones;
+    protected final Map<String, CloneData> clones;
     private ResourceElement linkedResource;
 
     public ResourceCloneList(ResourceElement re) {

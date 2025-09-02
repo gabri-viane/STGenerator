@@ -75,7 +75,9 @@ public class Project implements Serializable {
             ResourceElement fun = ((DataBlockInstanceElement) re).getBindedFunction();
             List<ResourceElement> elements = binded_resources.get(fun);
             if (elements != null) {
-                elements.add(re);
+                if (!elements.contains(re)) {
+                    elements.add(re);
+                }
             } else {
                 elements = new ArrayList<>();
                 elements.add(re);
@@ -132,7 +134,7 @@ public class Project implements Serializable {
 
         ResourceCloneList rem = instances.remove(re);
         if (rem != null) {
-            rem.getClones().clear();
+            rem.clear();
         }
         if (remove == lastEditedElement) {
             lastEditedElement = null;

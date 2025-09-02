@@ -236,7 +236,7 @@ public class Variable implements Serializable {
     public Variable copy() {
         Variable v = new Variable(name, type);
         v.comment = comment;
-        v.defaultValue = defaultValue;
+        v.defaultValue = defaultValue != null ? "" + defaultValue : null;
         v.typeModifier.of(this);
         return v;
     }

@@ -42,7 +42,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="IstanciateResource">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="TXTBundle.getString(&quot;IstantiateResource&quot;)&#xd;&#xa;" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="IstanciateResourceActionPerformed"/>

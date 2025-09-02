@@ -182,6 +182,9 @@ public class VariableTableCreator extends javax.swing.JPanel {
         int selectedIndex = VarTable.getSelectedRow();
         //Deletion check
         if (evt.getKeyCode() == KeyEvent.VK_DELETE && selectedIndex > -1) {
+            if (!contentEditable) {
+                return;
+            }
             /*
             delete the row and consume the event to avoid error sound from 
             key pressed by the system
@@ -198,6 +201,9 @@ public class VariableTableCreator extends javax.swing.JPanel {
         } else if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             boolean shouldAdd = shouldAddVar();
             if (!shouldAdd) {
+                return;
+            }
+            if (!contentEditable) {
                 return;
             }
             //Enter has been pressed: check if last row or no row is selected
@@ -218,12 +224,18 @@ public class VariableTableCreator extends javax.swing.JPanel {
 
     private void DeleteRowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteRowActionPerformed
         //Delete Variable if valid index
+        if (!contentEditable) {
+            return;
+        }
         deleteCurrent();
     }//GEN-LAST:event_DeleteRowActionPerformed
 
     private void AddRowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddRowActionPerformed
         boolean shouldAdd = shouldAddVar();
         if (!shouldAdd) {
+            return;
+        }
+        if (!contentEditable) {
             return;
         }
         //Append new blank variable
@@ -370,6 +382,7 @@ public class VariableTableCreator extends javax.swing.JPanel {
         DuplicateBtn.setEnabled(contentEditable);
         MoveDownBtn.setEnabled(contentEditable);
         MoveUpBtn.setEnabled(contentEditable);
+        RemoveBtn.setEnabled(contentEditable);
     }
 
     public List<Variable> getVariables() {
@@ -381,6 +394,9 @@ public class VariableTableCreator extends javax.swing.JPanel {
      * to the resource coping the selected variable
      */
     private void duplicateCurrent() {
+        if (!contentEditable) {
+            return;
+        }
         int selectedIndex = VarTable.getSelectedRow();
         if (selectedIndex > 0 && selectedIndex < vtr.getRowCount()) {//>0 la prima non la posso muovere
             Variable row = vtr.getRow(selectedIndex);
@@ -395,6 +411,9 @@ public class VariableTableCreator extends javax.swing.JPanel {
     }
 
     private void deleteCurrent() {
+        if (!contentEditable) {
+            return;
+        }
         int selectedIndex = VarTable.getSelectedRow();
         if (selectedIndex != -1 && selectedIndex < vtr.getRowCount()) {
             vtr.removeRow(selectedIndex);
@@ -402,6 +421,9 @@ public class VariableTableCreator extends javax.swing.JPanel {
     }
 
     private void moveCurrent(VariableTableRender.Direction direction) {
+        if (!contentEditable) {
+            return;
+        }
         int selectedIndex = VarTable.getSelectedRow();
         if (selectedIndex > 0 && selectedIndex < vtr.getRowCount()) {//>0 la prima non la posso muovere
             Variable row = vtr.getRow(selectedIndex);
@@ -439,14 +461,23 @@ public class VariableTableCreator extends javax.swing.JPanel {
     }
 
     private void showArrayDialog(Variable v) {
+        if (!contentEditable) {
+            return;
+        }
         showDialog(v, true);
     }
 
     private void showStringDialog(Variable v) {
+        if (!contentEditable) {
+            return;
+        }
         showDialog(v, false);
     }
 
     private void showDialog(Variable v, boolean array) {
+        if (!contentEditable) {
+            return;
+        }
         JDialog dialog = new JDialog();
         ClosableFrame cf;
         if (array) {

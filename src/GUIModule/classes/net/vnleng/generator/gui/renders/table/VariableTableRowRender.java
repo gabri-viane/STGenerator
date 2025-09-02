@@ -35,7 +35,7 @@ public class VariableTableRowRender implements TableCellRenderer {
                     return type;
                 }
                 case 2->{
-                    startValue.setText(v.getDefaultValue().toString());
+                    startValue.setText(v.getDefaultValue());
                     return startValue;
                 }
                 case 3->{

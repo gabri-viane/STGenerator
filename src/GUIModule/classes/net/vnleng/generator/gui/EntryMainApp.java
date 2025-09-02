@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.JFileChooser;
 import net.vnleng.generator.gui.panels.project.OpenProjectPane;
@@ -398,18 +399,25 @@ public class EntryMainApp extends javax.swing.JFrame {
 
     private JInternalFrame showProjectContentPane() {
         EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> eh = new EventHandler<>();
+        /*
+        Imposto la gestione di creazione e modifica di una FunctionBlock
+        */
         eh.addHandler(ResourceType.Function, (element) -> {
             FunctionElement functionElement;
-            if (element != null) {
-                functionElement = (FunctionElement) element;
-            } else {
+            if (element != null) {//Se esiste
+                functionElement = (FunctionElement) element; //Allora la prendo
+            } else {//Non esiste e quindi la devo creare
                 String name = askResourceName();
                 if (name == null || name.isEmpty()) {
                     return;
                 }
                 functionElement = new FunctionElement(name);
             }
-            JInternalFrame jif = FrameCreator.createFrame(functionElement.getName() + "[FC]", true, new FunctionDefinitionPanel(sharedData, functionElement), DesktopPane);
+            //Creo l'interfaccia per la creazione/modifica della risorsa
+            FunctionDefinitionPanel fpanel = new FunctionDefinitionPanel(sharedData, functionElement);
+            //Imposta un evento per il salvataggio in modo da aggiornare le risorse dipendenti
+            setSaveListener(fpanel);
+            JInternalFrame jif = FrameCreator.createFrame(functionElement.getName() + "[FC]", true, fpanel, DesktopPane);
             jif.setLayer(1);
         });
         eh.addHandler(ResourceType.FunctionBlock, (element) -> {
@@ -423,7 +431,9 @@ public class EntryMainApp extends javax.swing.JFrame {
                 }
                 functionElement = new FunctionBlockElement(name);
             }
-            JInternalFrame jif = FrameCreator.createFrame(functionElement.getName() + "[FB]", true, new FunctionDefinitionPanel(sharedData, functionElement), DesktopPane);
+            FunctionDefinitionPanel fpanel = new FunctionDefinitionPanel(sharedData, functionElement);
+            setSaveListener(fpanel);
+            JInternalFrame jif = FrameCreator.createFrame(functionElement.getName() + "[FB]", true, fpanel, DesktopPane);
             jif.setLayer(1);
         });
         eh.addHandler(ResourceType.DataBlock, (element) -> {
@@ -514,6 +524,32 @@ public class EntryMainApp extends javax.swing.JFrame {
         } catch (IOException ex) {
             System.getLogger(EntryMainApp.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
+    }
+
+    /**
+     * Imposta un listener di salvataggio della risorsa in modo che quando viene
+     * salvata per una modifica o per altre ragioni vengono aggiornate anche le
+     * istanze associate
+     *
+     * @param fdp Il pannello che si occupa di gestire la modifica.
+     */
+    private void setSaveListener(FunctionDefinitionPanel fdp) {
+        /*
+            Quando una funzione viene modificata/aggiornata i dati devono anche 
+            essere aggiornate le istanze associate dei DataBlockInstance
+         */
+        fdp.setOnSaveListener((res) -> {
+            //Prendo le risorse associate a questa funzione
+            List<ResourceElement> get = sharedData.getProject().getBindedResources().get(res);
+            if (get != null && !get.isEmpty()) {//Se ho delle istanze associate
+                get.forEach((t) -> {//Per ogni istanza 
+                    //Se è un'istanza della funzione allora lo aggiorno
+                    if (t instanceof DataBlockInstanceElement dbi) {
+                        dbi.reload();
+                    }
+                });
+            }
+        });
     }
 
 }

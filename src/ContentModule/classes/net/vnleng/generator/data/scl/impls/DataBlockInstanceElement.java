@@ -24,8 +24,19 @@ public class DataBlockInstanceElement extends DataBlockResource implements Reloa
     private static final long serialVersionUID = 3L;
     private final FunctionResource bindedFunction;
 
+    private final VariablePack in;
+    private final VariablePack out;
+    private final VariablePack inout;
+    private final VariablePack consts;
+    private final VariablePack statics;
+
     public DataBlockInstanceElement(String name, FunctionResource function) {
         super(name, ResourceType.FunctionInstance);
+        this.in = new VariablePack(PackType.INPUT);
+        this.out = new VariablePack(PackType.OUTPUT);
+        this.inout = new VariablePack(PackType.INOUT);
+        this.consts = new VariablePack(PackType.CONST);
+        this.statics = new VariablePack(PackType.STATIC);
         this.bindedFunction = function;
         reload();
     }
@@ -39,7 +50,32 @@ public class DataBlockInstanceElement extends DataBlockResource implements Reloa
 
     @Override
     public VariablePack getVariables(PackType pt) {
-        return bindedFunction.getVariables(pt);
+        switch (pt) {
+            case CONST -> {
+                return consts;
+            }
+            case INOUT -> {
+                return inout;
+            }
+            case INPUT -> {
+                return in;
+            }
+            case OUTPUT -> {
+                return out;
+            }
+            case STATIC -> {
+                return statics;
+            }
+            case TEMP -> {
+                return null;
+            }
+            case GENERIC -> {
+                return variables;
+            }
+            default -> {
+                return variables;
+            }
+        }
     }
 
     /**
@@ -62,11 +98,18 @@ public class DataBlockInstanceElement extends DataBlockResource implements Reloa
 
     @Override
     public final void reload() {
-        variables.copyOf(bindedFunction.getInputs(), false, true);
-        variables.copyOf(bindedFunction.getOutputs(), false, true);
-        variables.copyOf(bindedFunction.getInout(), false, true);
-        variables.copyOf(bindedFunction.getConsts(), false, true);
-        variables.copyOf(bindedFunction.getStatics(), false, true);
+        in.copyOf(bindedFunction.getInputs(), true, true);
+        out.copyOf(bindedFunction.getOutputs(), true, true);
+        inout.copyOf(bindedFunction.getInout(), true, true);
+        consts.copyOf(bindedFunction.getConsts(), true, true);
+        statics.copyOf(bindedFunction.getStatics(), true, true);
+
+        variables.bind(in, true, true);
+        variables.bind(out, false, true);
+        variables.bind(inout, false, true);
+        variables.bind(consts, false, true);
+        variables.bind(statics, false, true);
+
         bounded = bindedFunction;
     }
 

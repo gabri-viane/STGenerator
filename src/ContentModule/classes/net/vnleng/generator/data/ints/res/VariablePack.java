@@ -191,6 +191,42 @@ public final class VariablePack implements Serializable, Iterable<Variable>, Lis
     }
 
     /**
+     * Associa le variabili di un {@link VariablePack} inserendo le istanze. 
+     * Se la variabile {@code keepDefualts} è impostata a {@code true} allora se
+     * è il valore precedente di default.
+     *
+     * @param vp Lista da cui referenziare i contenuti
+     * @param clear Se vale {@code true} allora esegue un reset della lista
+     * prima di copiare le variabili.
+     * @param keepDefaults Mantiene i default delle variabili presenti.
+     */
+    public void bind(VariablePack vp, boolean clear, boolean keepDefaults) {
+        HashMap<String, String> oldDefaults = new HashMap<>();
+        if (keepDefaults) {
+            variables.forEach((s, v) -> oldDefaults.put(s, v.getDefaultValue()));
+        }
+        if (clear) {
+            variables.clear();
+            orderedVars.clear();
+        }
+        if (vp == null || vp.orderedVars.isEmpty()) {
+            return;
+        }
+        if (keepDefaults) {
+            vp.orderedVars.forEach((t) -> {
+                t.setDefaultValue(oldDefaults.getOrDefault(t.getName(), t.getDefaultValue()));
+                orderedVars.add(t);
+                variables.put(t.getName(), t);
+            });
+        } else {
+            vp.orderedVars.forEach((t) -> {
+                orderedVars.add(t);
+                variables.put(t.getName(), t);
+            });
+        }
+    }
+
+    /**
      * Rimuove una variabile aggiornando la lista.
      *
      * @param v La variabile da rimuovere.
