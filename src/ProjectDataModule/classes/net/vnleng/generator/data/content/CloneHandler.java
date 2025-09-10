@@ -40,15 +40,18 @@ public class CloneHandler {
      */
     public static CloneData createCloneData(String name, Map<String, String> newDefaults) {
         CloneData cd = new CloneData(name);
-        newDefaults.forEach((n, v) -> {
-            cd.overrideVariable(n, v);
-        });
+        if (newDefaults != null) {
+            newDefaults.forEach((n, v) -> {
+                cd.overrideVariable(n, v);
+            });
+        }
         return cd;
     }
 
     /**
      * Pulisce gli elementi di una CloneData.
-     * @param cd 
+     *
+     * @param cd
      */
     public static void clearCloneData(CloneData cd) {
         if (cd != null) {

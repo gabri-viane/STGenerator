@@ -14,6 +14,7 @@ module ProjectDataModule {
     exports net.vnleng.generator.data.rules;
     exports net.vnleng.generator.data.rules.ints;
     exports net.vnleng.generator.data.shared;
+    exports net.vnleng.generator.data.shared.listeners;
     exports net.vnleng.generator.data.serialization;
     
 }

@@ -150,9 +150,13 @@ public class Project implements Serializable {
      * sovrascrivere.
      *
      * @param name Il nome della risorsa:e.g. "PT201"
-     * @param variableDefaults Una mappa di: "Nome Var -
+     * @param variableDefaults Una mappa di: "Nome Var - Valore Def"
+     * @return Restituisce {@code true} se la risorsa è stata creata
      */
-    public void createCloneData(String name, Map<String, String> variableDefaults) {
+    public boolean createCloneData(String name, Map<String, String> variableDefaults) {
+        if (name == null || name.isBlank()) {
+            return false;
+        }
         CloneData cd = CloneHandler.createCloneData(name, variableDefaults);
         if (projectData.containsKey(name)) {
             CloneData get = projectData.get(name);
@@ -164,6 +168,7 @@ public class Project implements Serializable {
         } else {
             projectData.put(name, cd);
         }
+        return true;
     }
 
     /**
@@ -173,15 +178,35 @@ public class Project implements Serializable {
      * @param re La risorsa a cui collegare il dato
      * @return
      */
-    public boolean bindCloneData(CloneData cd, ResourceElement re) {
-        if (cd == null || re == null) {
+    public boolean bindCloneData(String cdName, ResourceElement re) {
+        if (cdName == null || cdName.isBlank() || re == null) {
             return false;
         }
         ResourceCloneList get = instances.get(re);
         if (get == null) {
             return false;
         }
+        CloneData cd = projectData.get(cdName);
         return CloneHandler.addCloneData(get, cd);
+    }
+
+    /**
+     * Restituisec la lista di nomi di {@link CloneData} collegate ad un
+     * {@link ResourceElement} se presenti, altrimenti restituisce una lista
+     * vuota.
+     *
+     * @param re Risorsa per cui richiedere la lista di nomi di
+     * {@link CloneData}
+     * @return Una lista di risorse collegate.
+     */
+    public List<String> getBindedData(ResourceElement re) {
+        if (re == null || !instances.containsKey(re)) {
+            return new ArrayList<>();
+        }
+        ResourceCloneList get = instances.get(re);
+        List<String> binded = new ArrayList<>();
+        binded.addAll(get.getClones().keySet());
+        return binded;
     }
 
     public String getProjectName() {

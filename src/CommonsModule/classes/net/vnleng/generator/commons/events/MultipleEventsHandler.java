@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author gabri
  */
-public final class EventHandler<T, K, V extends CallbackEventHandler<K>> {
+public final class MultipleEventsHandler<T, K, V extends CallbackEventHandler<K>> {
 
     private static final CallbackEventHandler<? extends Object> EMPTY_HANDLER = (Object element) -> {
     };
@@ -31,7 +31,7 @@ public final class EventHandler<T, K, V extends CallbackEventHandler<K>> {
     private final Map<T, V> handlers;
     private CallbackEventHandler<? extends Object> backupHandler = EMPTY_HANDLER;
 
-    public EventHandler() {
+    public MultipleEventsHandler() {
         handlers = new HashMap<>();
     }
 

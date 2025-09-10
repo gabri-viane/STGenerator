@@ -4,13 +4,19 @@
  */
 package net.vnleng.generator.data.shared;
 
+import net.vnleng.generator.data.shared.listeners.SharedDataChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import net.vnleng.generator.data.Project;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import net.vnleng.generator.commons.Pair;
+import net.vnleng.generator.commons.events.EventHandlerList;
+import net.vnleng.generator.commons.events.GenericEventHandler;
 import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
+import net.vnleng.generator.data.shared.listeners.ProjectListener;
 
 /**
  *
@@ -18,9 +24,14 @@ import net.vnleng.generator.data.serialization.ProjectSerializer;
  */
 public class SharedData {
 
-    private final List<SharedDataChangeListener<Project>> projectOpenedEventListeners;
-    private final List<SharedDataChangeListener<Project>> projectClosedEventListeners;
-    private final List<SharedDataChangeListener<Project>> projectEditedEventListeners;
+    private final EventHandlerList<Project, ProjectListener> projectOpenedEventListeners;
+    private final EventHandlerList<Project, ProjectListener> projectClosedEventListeners;
+    private final EventHandlerList<Project, ProjectListener> projectEditedEventListeners;
+
+    //private final List<SharedDataChangeListener<Project>> projectOpenedEventListeners;
+    //private final List<SharedDataChangeListener<Project>> projectClosedEventListeners;
+    //private final List<SharedDataChangeListener<Project>> projectEditedEventListeners;
+    private final List<SharedDataChangeListener<Pair<String, ResourceElement>>> cloneDataChangedEventListeners;
     private final List<SharedDataChangeListener<SharedData>> saveEventListeners;
     private boolean hasBeenEdited = false;
 
@@ -30,9 +41,10 @@ public class SharedData {
     private Project p;
 
     public SharedData() {
-        this.projectOpenedEventListeners = new ArrayList<>();
-        this.projectClosedEventListeners = new ArrayList<>();
-        this.projectEditedEventListeners = new ArrayList<>();
+        this.projectOpenedEventListeners = new EventHandlerList<>();
+        this.projectClosedEventListeners = new EventHandlerList<>();
+        this.projectEditedEventListeners = new EventHandlerList<>();
+        this.cloneDataChangedEventListeners = new ArrayList<>();
         this.saveEventListeners = new ArrayList<>();
     }
 
@@ -47,21 +59,24 @@ public class SharedData {
             filePath = null;
             hasBeenEdited = true;
         }
-        List.copyOf(projectOpenedEventListeners).forEach((t) -> {
-            t.onChange(p);
-        });
+        projectOpenedEventListeners.handle(p);
     }
 
-    public void addProjectOpenedEventListener(SharedDataChangeListener<Project> listener) {
-        this.projectOpenedEventListeners.add(listener);
+    public GenericEventHandler<Project, ProjectListener> addProjectListener(ProjectListener.ProjectEventType type) {
+        GenericEventHandler<Project, ProjectListener> handler = new GenericEventHandler<>();
+        switch (type) {
+            case CLOSED ->
+                this.projectClosedEventListeners.addHandler(handler);
+            case EDITED ->
+                this.projectEditedEventListeners.addHandler(handler);
+            case OPENED ->
+                this.projectOpenedEventListeners.addHandler(handler);
+        }
+        return handler;
     }
 
-    public void addProjectClosedEventListener(SharedDataChangeListener<Project> listener) {
-        this.projectClosedEventListeners.add(listener);
-    }
-
-    public void addProjectEditedEventListener(SharedDataChangeListener<Project> listener) {
-        this.projectEditedEventListeners.add(listener);
+    public void addCloneDataChangedEventListener(SharedDataChangeListener<Pair<String, ResourceElement>> listener) {
+        this.cloneDataChangedEventListeners.add(listener);
     }
 
     public void addSaveEventListener(SharedDataChangeListener<SharedData> listener) {
@@ -73,12 +88,10 @@ public class SharedData {
             p.addResource(re);
             boolean previous = hasBeenEdited;
             this.hasBeenEdited = true;
-            List.copyOf(projectEditedEventListeners).forEach((t) -> {
-                t.onChange(p);
-            });
+            projectEditedEventListeners.handle(p);
             if (this.hasBeenEdited != previous) {
                 List.copyOf(saveEventListeners).forEach(t -> {
-                    t.onChange(this);
+                    t.callback(this);
                 });
             }
         }
@@ -89,12 +102,10 @@ public class SharedData {
             p.renameResource(re, newName);
             boolean previous = hasBeenEdited;
             this.hasBeenEdited = true;
-            List.copyOf(projectEditedEventListeners).forEach((t) -> {
-                t.onChange(p);
-            });
+            projectEditedEventListeners.handle(p);
             if (this.hasBeenEdited != previous) {
                 List.copyOf(saveEventListeners).forEach(t -> {
-                    t.onChange(this);
+                    t.callback(this);
                 });
             }
         }
@@ -105,15 +116,48 @@ public class SharedData {
             p.removeResource(re);
             boolean previous = hasBeenEdited;
             this.hasBeenEdited = true;
-            List.copyOf(projectEditedEventListeners).forEach((t) -> {
-                t.onChange(p);
-            });
+            projectEditedEventListeners.handle(p);
             if (this.hasBeenEdited != previous) {
                 List.copyOf(saveEventListeners).forEach(t -> {
-                    t.onChange(this);
+                    t.callback(this);
                 });
             }
         }
+    }
+
+    /**
+     * Permette di creare, ed in caso associare ad una risorsa, una CloneData.
+     *
+     * @param re Se {@code re != null} allora viene registrata la clone data
+     * alla risorsa.
+     * @param name Il nome della risorsa da creare, non può essere nullo o
+     * vuoto.
+     * @param values La mappa dei valori di default che la risorsa sovrascriverà
+     * alla generazione.
+     * @return Restituisce {@code true} nel caso in cui la risorsa venga creata
+     * ed associata correttamente.
+     */
+    public boolean createCloneData(ResourceElement re, String name, Map<String, String> values) {
+        if (name == null || name.isBlank()) {
+            return false;
+        }
+        Pair<String, ResourceElement> data = new Pair<>(name, re);
+        boolean result = p.createCloneData(name, values);
+        if (re == null || !result) {
+            if (result) {
+                hasBeenEdited = true;
+                cloneDataChangedEventListeners.forEach(t -> t.callback(data));
+                projectEditedEventListeners.handle(p);
+            }
+            return result;
+        }
+        result = p.bindCloneData(name, re);
+        if (result) {
+            hasBeenEdited = true;
+            cloneDataChangedEventListeners.forEach(t -> t.callback(data));
+            projectEditedEventListeners.handle(p);
+        }
+        return result;
     }
 
     public void save(String filepath) throws FileNotFoundException, IOException {
@@ -124,7 +168,7 @@ public class SharedData {
         this.hasFileAssocieted = true;
         if (this.hasBeenEdited != previous) {
             List.copyOf(saveEventListeners).forEach(t -> {
-                t.onChange(this);
+                t.callback(this);
             });
         }
     }
@@ -138,7 +182,7 @@ public class SharedData {
         hasBeenEdited = false;
         hasFileAssocieted = false;
         filePath = null;
-        this.projectClosedEventListeners.forEach(l -> l.onChange(p));
+        projectClosedEventListeners.handle(p);
     }
 
     public boolean hasBeenEdited() {

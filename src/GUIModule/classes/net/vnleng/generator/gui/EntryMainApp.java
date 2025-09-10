@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import net.vnleng.generator.commons.events.CallbackEventHandler;
-import net.vnleng.generator.commons.events.EventHandler;
+import net.vnleng.generator.commons.events.MultipleEventsHandler;
 import net.vnleng.generator.data.Project;
 import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.ints.res.ResourceType;
@@ -27,6 +27,7 @@ import net.vnleng.generator.data.scl.ints.FunctionResource;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
 import net.vnleng.generator.data.serialization.ProjectUnrecognizedError;
 import net.vnleng.generator.data.serialization.ProjectVersionError;
+import net.vnleng.generator.data.shared.listeners.ProjectListener;
 import net.vnleng.generator.gui.panels.FrameCreator;
 import net.vnleng.generator.gui.panels.content.FunctionDefinitionPanel;
 import net.vnleng.generator.gui.panels.project.ProjectContentPane;
@@ -43,14 +44,13 @@ public class EntryMainApp extends javax.swing.JFrame {
 
     private static final SharedData sharedData = new SharedData();
     private final ResourceBundle TXTbundle;
-    private final ResourceBundle DIAGbundle;
+    private static final ResourceBundle DIAGbundle = TextResources.DialogsTextBundle;
 
     /**
      * Creates new form MainApp
      */
     public EntryMainApp() {
         TXTbundle = TextResources.GUITextBundle;
-        DIAGbundle = TextResources.DialogsTextBundle;
         initComponents();
         enableActions(false);
         initDataListeners();
@@ -350,16 +350,20 @@ public class EntryMainApp extends javax.swing.JFrame {
     }
 
     private void initDataListeners() {
-        sharedData.addProjectOpenedEventListener((data) -> {
-            if (sharedData.hasBeenEdited()) {
-
-                this.setTitle(data.getProjectName() + "*");
-            } else {
-                this.setTitle(data.getProjectName());
-            }
-            showProjectContentPane();
-            enableActions(true);
-        });
+        sharedData.addProjectListener(ProjectListener.ProjectEventType.OPENED)
+                .setHandler((data) -> {
+                    if (sharedData.hasBeenEdited()) {
+                        this.setTitle(data.getProjectName() + "*");
+                    } else {
+                        this.setTitle(data.getProjectName());
+                    }
+                    showProjectContentPane();
+                    enableActions(true);
+                });
+        sharedData.addProjectListener(ProjectListener.ProjectEventType.EDITED)
+                .setHandler((prj) -> {
+                    this.setTitle(prj.getProjectName() + "*");
+                });
         sharedData.addSaveEventListener((data) -> {
             if (data.hasBeenEdited()) {
                 this.setTitle(data.getProject().getProjectName() + "*");
@@ -367,13 +371,14 @@ public class EntryMainApp extends javax.swing.JFrame {
                 this.setTitle(data.getProject().getProjectName());
             }
         });
-        sharedData.addProjectClosedEventListener((data) -> {
-            this.setTitle("");
-            this.DesktopPane.removeAll();
-            this.DesktopPane.repaint();
-            this.setupFrontPage();
-            enableActions(false);
-        });
+        sharedData.addProjectListener(ProjectListener.ProjectEventType.CLOSED)
+                .setHandler((data) -> {
+                    this.setTitle("");
+                    this.DesktopPane.removeAll();
+                    this.DesktopPane.repaint();
+                    this.setupFrontPage();
+                    enableActions(false);
+                });
     }
 
     private void enableActions(boolean enable) {
@@ -398,10 +403,10 @@ public class EntryMainApp extends javax.swing.JFrame {
     }
 
     private JInternalFrame showProjectContentPane() {
-        EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> eh = new EventHandler<>();
+        MultipleEventsHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> eh = new MultipleEventsHandler<>();
         /*
         Imposto la gestione di creazione e modifica di una FunctionBlock
-        */
+         */
         eh.addHandler(ResourceType.Function, (element) -> {
             FunctionElement functionElement;
             if (element != null) {//Se esiste
@@ -478,7 +483,7 @@ public class EntryMainApp extends javax.swing.JFrame {
         return jif;
     }
 
-    private String askResourceName() {
+    public static String askResourceName() {
         return JOptionPane.showInputDialog(DIAGbundle.getString("RequestInputName"));
     }
 

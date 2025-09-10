@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javax.swing.DefaultListModel;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -16,7 +17,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import net.vnleng.generator.commons.Pair;
 import net.vnleng.generator.commons.events.CallbackEventHandler;
-import net.vnleng.generator.commons.events.EventHandler;
+import net.vnleng.generator.commons.events.MultipleEventsHandler;
 import net.vnleng.generator.data.Project;
 import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.ints.res.ResourceType;
@@ -25,6 +26,8 @@ import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
 import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.shared.SharedData;
+import net.vnleng.generator.data.shared.listeners.ProjectListener;
+import net.vnleng.generator.gui.EntryMainApp;
 import net.vnleng.generator.gui.renders.tree.ProjectTreeEditor;
 import net.vnleng.generator.gui.renders.tree.ProjectTreeRender;
 import net.vnleng.generator.resources.TextResources;
@@ -36,13 +39,13 @@ import net.vnleng.generator.resources.TextResources;
 public class ProjectContentPane extends javax.swing.JPanel {
 
     private final SharedData sharedData;
-    private final EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> handler;
+    private final MultipleEventsHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> handler;
     private final static ResourceBundle TXTBundle = TextResources.GUITextBundle;
 
     /**
      * Creates new form ProjectContentPane
      */
-    public ProjectContentPane(SharedData data, EventHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> handler) {
+    public ProjectContentPane(SharedData data, MultipleEventsHandler<ResourceType, ResourceElement, CallbackEventHandler<ResourceElement>> handler) {
         this.handler = handler;
         this.sharedData = data;
         initComponents();
@@ -64,6 +67,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
         RemoveResource = new javax.swing.JMenuItem();
         Sep1 = new javax.swing.JPopupMenu.Separator();
         ModifyResource = new javax.swing.JMenuItem();
+        BindResource = new javax.swing.JMenuItem();
+        Sep2 = new javax.swing.JPopupMenu.Separator();
         IstanciateResource = new javax.swing.JMenuItem();
         PaginaIstanze = new javax.swing.JPanel();
         PaginaOggetti = new javax.swing.JPanel();
@@ -75,7 +80,10 @@ public class ProjectContentPane extends javax.swing.JPanel {
         AddFCButton = new javax.swing.JButton();
         AddFBButton = new javax.swing.JButton();
         AddDBButton = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        IstancePanel = new javax.swing.JPanel();
+        IstanceDescrLabel = new javax.swing.JLabel();
+        IstancesListSP = new javax.swing.JScrollPane();
+        IstancesList = new javax.swing.JList<>();
         TitoloPannello = new javax.swing.JLabel();
         TabbedPane = new javax.swing.JTabbedPane();
 
@@ -103,6 +111,16 @@ public class ProjectContentPane extends javax.swing.JPanel {
             }
         });
         ResourceContextMenu.add(ModifyResource);
+
+        BindResource.setText(TXTBundle.getString("BindResource")
+        );
+        BindResource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BindResourceActionPerformed(evt);
+            }
+        });
+        ResourceContextMenu.add(BindResource);
+        ResourceContextMenu.add(Sep2);
 
         IstanciateResource.setText(TXTBundle.getString("IstantiateResource")
         );
@@ -185,15 +203,29 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 305, Short.MAX_VALUE)
+        IstanceDescrLabel.setText("Istanze della risorsa:");
+
+        IstancesListSP.setViewportView(IstancesList);
+
+        javax.swing.GroupLayout IstancePanelLayout = new javax.swing.GroupLayout(IstancePanel);
+        IstancePanel.setLayout(IstancePanelLayout);
+        IstancePanelLayout.setHorizontalGroup(
+            IstancePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(IstancePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(IstancePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(IstanceDescrLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(IstancesListSP, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE))
+                .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        IstancePanelLayout.setVerticalGroup(
+            IstancePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(IstancePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(IstanceDescrLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(IstancesListSP)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout PaginaOggettiLayout = new javax.swing.GroupLayout(PaginaOggetti);
@@ -203,16 +235,13 @@ public class ProjectContentPane extends javax.swing.JPanel {
             .addGroup(PaginaOggettiLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(PaginaOggettiLayout.createSequentialGroup()
-                        .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(StructLabel)
-                            .addComponent(TreeScrollPane)
-                            .addComponent(AddButtonsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(PaginaOggettiLayout.createSequentialGroup()
-                        .addComponent(AddLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(StructLabel)
+                        .addComponent(TreeScrollPane)
+                        .addComponent(AddButtonsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(AddLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(IstancePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PaginaOggettiLayout.setVerticalGroup(
@@ -222,12 +251,13 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 .addComponent(StructLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(PaginaOggettiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(TreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(AddLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(AddButtonsContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(PaginaOggettiLayout.createSequentialGroup()
+                        .addComponent(TreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(AddLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(AddButtonsContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(IstancePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -278,12 +308,14 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 return;
             }
             if ((comp instanceof FunctionElement) || (comp instanceof FunctionBlockElement)) {
-                IstanciateResource.setEnabled(true);
+                BindResource.setEnabled(true);
             } else {
-                IstanciateResource.setEnabled(false);
+                BindResource.setEnabled(false);
             }
             ProjectTree.getComponentPopupMenu().show(ProjectTree, x, y);
             evt.consume();
+        } else if (evt.getButton() == MouseEvent.BUTTON1) {
+            showCloneData();
         }
     }//GEN-LAST:event_ProjectTreeMouseClicked
 
@@ -344,7 +376,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_ModifyResourceActionPerformed
 
-    private void IstanciateResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IstanciateResourceActionPerformed
+    private void BindResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BindResourceActionPerformed
         if (!ProjectTree.isSelectionEmpty()) {
             TreePath selectionPath = ProjectTree.getSelectionPath();
             DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
@@ -357,6 +389,22 @@ public class ProjectContentPane extends javax.swing.JPanel {
                 handler.getHandler(ResourceType.FunctionInstance).callback(re);
             }
         }
+    }//GEN-LAST:event_BindResourceActionPerformed
+
+    private void IstanciateResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IstanciateResourceActionPerformed
+        if (!ProjectTree.isSelectionEmpty()) {
+            TreePath selectionPath = ProjectTree.getSelectionPath();
+            DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+            Object obj = lastPathComponent.getUserObject();
+            if (obj instanceof Project) {
+                return;
+            }
+            ResourceElement re = (ResourceElement) obj;
+            String newCloneDataName = EntryMainApp.askResourceName();
+            if (newCloneDataName != null && !newCloneDataName.isBlank()) {
+                sharedData.createCloneData(re, newCloneDataName, null);
+            }
+        }
     }//GEN-LAST:event_IstanciateResourceActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -365,6 +413,11 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JButton AddFBButton;
     private javax.swing.JButton AddFCButton;
     private javax.swing.JLabel AddLabel;
+    private javax.swing.JMenuItem BindResource;
+    private javax.swing.JLabel IstanceDescrLabel;
+    private javax.swing.JPanel IstancePanel;
+    private javax.swing.JList<String> IstancesList;
+    private javax.swing.JScrollPane IstancesListSP;
     private javax.swing.JMenuItem IstanciateResource;
     private javax.swing.JMenuItem ModifyResource;
     private javax.swing.JPanel PaginaIstanze;
@@ -374,21 +427,23 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JMenuItem RenameResource;
     private javax.swing.JPopupMenu ResourceContextMenu;
     private javax.swing.JPopupMenu.Separator Sep1;
+    private javax.swing.JSeparator Sep2;
     private javax.swing.JLabel StructLabel;
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JLabel TitoloPannello;
     private javax.swing.JScrollPane TreeScrollPane;
-    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 
     private void initDataListeners() {
         ProjectTree.setComponentPopupMenu(ResourceContextMenu);
-        this.sharedData.addProjectOpenedEventListener((prj) -> {
-            fillProjectTree(prj);
-        });
-        this.sharedData.addProjectEditedEventListener((prj) -> {
-            fillProjectTree(prj);
-        });
+        this.sharedData.addProjectListener(ProjectListener.ProjectEventType.OPENED)
+                .setHandler((prj) -> {
+                    fillProjectTree(prj);
+                });
+        this.sharedData.addProjectListener(ProjectListener.ProjectEventType.EDITED)
+                .setHandler((prj) -> {
+                    fillProjectTree(prj);
+                });
         ProjectTree.setCellEditor(new ProjectTreeEditor(ProjectTree));
         ProjectTree.getCellEditor().addCellEditorListener(new CellEditorListener() {
             @Override
@@ -402,6 +457,10 @@ public class ProjectContentPane extends javax.swing.JPanel {
             public void editingCanceled(ChangeEvent e) {
                 ProjectTree.setEditable(false);
             }
+        });
+        //Ascolto per eventi di modifica 
+        sharedData.addCloneDataChangedEventListener((data) -> {
+            showCloneData();
         });
     }
 
@@ -452,6 +511,37 @@ public class ProjectContentPane extends javax.swing.JPanel {
         if (ap.getTp() != null) {
             ProjectTree.setSelectionPath(new TreePath(ap.tn.getPath()));
         }
+    }
+
+    /**
+     * Mostra nel pannello laterale alla lista le eventuali risorse, i nomi, che
+     * vengono generati a partire dalla risorsa selezionata in
+     * {@link #ProjectTree}
+     */
+    private void showCloneData() {
+        if (ProjectTree.isSelectionEmpty()) {
+            DefaultListModel<String> model = (DefaultListModel<String>) IstancesList.getModel();
+            model.clear();
+            return;
+        }
+        TreePath selectionPath = ProjectTree.getSelectionPath();
+        DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+        Object obj = lastPathComponent.getUserObject();
+        if (obj instanceof Project) {
+            DefaultListModel<String> model = (DefaultListModel<String>) IstancesList.getModel();
+            model.clear();
+            return;
+        }
+        ResourceElement re;
+        try {
+            re = (ResourceElement) obj;
+        } catch (ClassCastException cce) {
+            return;
+        }
+        List<String> bindedData = sharedData.getProject().getBindedData(re);
+        DefaultListModel<String> model = new DefaultListModel<>();
+        model.addAll(bindedData);
+        IstancesList.setModel(model);
     }
 
     private class AtomicPath {
