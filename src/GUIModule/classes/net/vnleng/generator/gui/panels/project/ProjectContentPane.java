@@ -26,6 +26,7 @@ import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 import net.vnleng.generator.data.scl.impls.FunctionBlockElement;
 import net.vnleng.generator.data.scl.impls.FunctionElement;
 import net.vnleng.generator.data.shared.SharedData;
+import net.vnleng.generator.data.shared.listeners.DataListener;
 import net.vnleng.generator.data.shared.listeners.ProjectListener;
 import net.vnleng.generator.gui.EntryMainApp;
 import net.vnleng.generator.gui.renders.tree.ProjectTreeEditor;
@@ -205,6 +206,8 @@ public class ProjectContentPane extends javax.swing.JPanel {
 
         IstanceDescrLabel.setText("Istanze della risorsa:");
 
+        IstancesList.setModel(new DefaultListModel<String>()
+        );
         IstancesListSP.setViewportView(IstancesList);
 
         javax.swing.GroupLayout IstancePanelLayout = new javax.swing.GroupLayout(IstancePanel);
@@ -427,7 +430,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
     private javax.swing.JMenuItem RenameResource;
     private javax.swing.JPopupMenu ResourceContextMenu;
     private javax.swing.JPopupMenu.Separator Sep1;
-    private javax.swing.JSeparator Sep2;
+    private javax.swing.JPopupMenu.Separator Sep2;
     private javax.swing.JLabel StructLabel;
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JLabel TitoloPannello;
@@ -459,7 +462,7 @@ public class ProjectContentPane extends javax.swing.JPanel {
             }
         });
         //Ascolto per eventi di modifica 
-        sharedData.addCloneDataChangedEventListener((data) -> {
+        sharedData.addResourceInstanceListener(DataListener.DataEventType.INSTANTIATED).setHandler((data) -> {
             showCloneData();
         });
     }

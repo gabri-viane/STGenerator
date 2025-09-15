@@ -24,53 +24,53 @@ import java.util.Map;
  *
  * @author gabri
  */
-public class CloneHandler {
+public class ResourceInstanceHandler {
 
-    private CloneHandler() {
+    private ResourceInstanceHandler() {
 
     }
 
     /**
-     * Crea un clone di un CloneData copiando le coppie Nome Variabile e Valore
-     * di default ed assegnando un nuovo nome
+     * Crea un clone di un ResourceInstance copiando le coppie Nome Variabile e
+     * Valore di default ed assegnando un nuovo nome
      *
      * @param name Nuovo nome della risorsa
      * @param newDefaults I valori da copiare
-     * @return La CloneData appena creata
+     * @return La ResourceInstance appena creata
      */
-    public static CloneData createCloneData(String name, Map<String, String> newDefaults) {
-        CloneData cd = new CloneData(name);
+    public static ResourceInstance createCloneData(String name, Map<String, String> newDefaults) {
+        ResourceInstance ri = new ResourceInstance(name);
         if (newDefaults != null) {
             newDefaults.forEach((n, v) -> {
-                cd.overrideVariable(n, v);
+                ri.overrideVariable(n, v);
             });
         }
-        return cd;
+        return ri;
     }
 
     /**
-     * Pulisce gli elementi di una CloneData.
+     * Pulisce gli elementi di una ResourceInstance.
      *
      * @param cd
      */
-    public static void clearCloneData(CloneData cd) {
+    public static void clearResourceInstance(ResourceInstance cd) {
         if (cd != null) {
             cd.clearDefaults();
         }
     }
 
-    public static boolean addCloneData(ResourceCloneList rcl, CloneData cd) {
+    public static boolean addResourceInstance(ResourceInstanceList rcl, ResourceInstance cd) {
         if (rcl == null || cd == null) {
             return false;
         }
         if (cd.getName().isBlank()) {
             return false;
         }
-        rcl.addClone(cd);
+        rcl.addInstance(cd);
         return true;
     }
 
-    public static boolean transferToCloneData(CloneData to, CloneData from) {
+    public static boolean transferToResourceInstance(ResourceInstance to, ResourceInstance from) {
         if (to == null) {
             return false;
         }

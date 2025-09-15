@@ -26,9 +26,9 @@ import java.util.Map;
  *
  * @author gabri
  */
-public class CloneData implements Serializable{
+public class ResourceInstance implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private String name;
     /**
@@ -36,7 +36,7 @@ public class CloneData implements Serializable{
      */
     private final Map<String, String> overrideVariableDefaults;
 
-    protected CloneData(String name) {
+    protected ResourceInstance(String name) {
         this.name = name;
         overrideVariableDefaults = new HashMap<>();
     }
@@ -49,6 +49,13 @@ public class CloneData implements Serializable{
         return name;
     }
 
+    /**
+     * Permette di aggiungere o sovrascrivere i valori delle variabili di
+     * default
+     *
+     * @param name Nome della variabile da modificare/aggiungere
+     * @param newdefault Valore della variabili
+     */
     public void overrideVariable(String name, String newdefault) {
         this.overrideVariableDefaults.put(name, newdefault);
     }
@@ -56,16 +63,17 @@ public class CloneData implements Serializable{
     /**
      * Restituisce le variabili che devono essere sovrascritte rispetto alla
      * risorsa che deve cloneare. Il formato della mappa è:
-     * <p>Nome Variabile - Valore di default</p>
+     * <p>
+     * Nome Variabile - Valore di default</p>
      *
      * @return
      */
     public Map<String, String> getOverrideVariableDefaults() {
         return overrideVariableDefaults;
     }
-    
-    protected void clearDefaults(){
+
+    protected void clearDefaults() {
         this.overrideVariableDefaults.clear();
     }
-    
+
 }

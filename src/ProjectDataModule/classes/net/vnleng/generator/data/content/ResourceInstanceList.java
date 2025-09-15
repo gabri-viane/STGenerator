@@ -28,59 +28,59 @@ import net.vnleng.generator.data.ints.res.ResourceElement;
  *
  * @author gabri
  */
-public class ResourceCloneList implements Serializable {
+public class ResourceInstanceList implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private String title = "Instances of ";
-    protected final Map<String, CloneData> clones;
+    protected final Map<String, ResourceInstance> instances;
     private ResourceElement linkedResource;
 
-    public ResourceCloneList(ResourceElement re) {
+    public ResourceInstanceList(ResourceElement re) {
         if (re == null) {
             throw new IllegalArgumentException("Can't clone null resource element.");
         }
         title = title + re.getName();
-        clones = new HashMap<>();
+        instances = new HashMap<>();
     }
 
     public ResourceElement getLinkedResource() {
         return linkedResource;
     }
 
-    public CloneData addClone(String name) {
-        CloneData cd = new CloneData(name);
-        clones.put(name, cd);
+    public ResourceInstance addInstance(String name) {
+        ResourceInstance cd = new ResourceInstance(name);
+        instances.put(name, cd);
         return cd;
     }
 
-    protected void addClone(CloneData cd) {
-        clones.put(cd.getName(), cd);
+    protected void addInstance(ResourceInstance cd) {
+        instances.put(cd.getName(), cd);
     }
 
-    public void updateCloneName(String name, String newname) {
-        CloneData get = clones.remove(name);
+    public void updateInstanceName(String name, String newname) {
+        ResourceInstance get = instances.remove(name);
         if (get == null) {
             return;
         }
 
         get.setName(newname);
-        clones.put(newname, get);
+        instances.put(newname, get);
     }
 
     public void removeClone(String name) {
         if (name == null || name.isBlank()) {
             return;
         }
-        clones.remove(name);
+        instances.remove(name);
     }
 
-    public Map<String, CloneData> getClones() {
-        return Collections.unmodifiableMap(clones);
+    public Map<String, ResourceInstance> getInstances() {
+        return Collections.unmodifiableMap(instances);
     }
 
     public void clear() {
-        clones.clear();
+        instances.clear();
     }
 
     public String getTitle() {

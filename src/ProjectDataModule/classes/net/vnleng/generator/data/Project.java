@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.vnleng.generator.commons.block.KeyLock;
-import net.vnleng.generator.data.content.CloneData;
-import net.vnleng.generator.data.content.CloneHandler;
-import net.vnleng.generator.data.content.ResourceCloneList;
+import net.vnleng.generator.data.content.ResourceInstance;
+import net.vnleng.generator.data.content.ResourceInstanceHandler;
+import net.vnleng.generator.data.content.ResourceInstanceList;
 import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
 
 /**
@@ -24,21 +24,21 @@ import net.vnleng.generator.data.scl.impls.DataBlockInstanceElement;
  */
 public class Project implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     private final String projectName;
     private final Map<ResourceType, Map<String, ResourceElement>> resources;
     private final Map<ResourceElement, List<ResourceElement>> binded_resources;
     /**
-     * Contiene i link delle instanze di CloneData, contenute in
+     * Contiene i link delle instanze di ResourceInstance, contenute in
      * {@link #projectData}, collegati alle risorse del progetto.
      */
-    private final Map<ResourceElement, ResourceCloneList> instances;
+    private final Map<ResourceElement, ResourceInstanceList> instances;
     /**
      * Contiene tutte le istanze dai dati di base che vengono usati per clonare
      * una risorsa: tipo "PT912" con tutte le
      */
-    private final Map<String, CloneData> projectData;
+    private final Map<String, ResourceInstance> projectData;
     private final List<RuleApplier> ruleAppliers;
 
     private ResourceElement lastEditedElement = null;
@@ -84,7 +84,7 @@ public class Project implements Serializable {
                 binded_resources.put(fun, elements);
             }
         }
-        instances.put(re, new ResourceCloneList(re));
+        instances.put(re, new ResourceInstanceList(re));
         lastEditedElement = re;
     }
 
@@ -132,7 +132,7 @@ public class Project implements Serializable {
             }
         }
 
-        ResourceCloneList rem = instances.remove(re);
+        ResourceInstanceList rem = instances.remove(re);
         if (rem != null) {
             rem.clear();
         }
@@ -146,24 +146,24 @@ public class Project implements Serializable {
     }
 
     /**
-     * Crea un'istanza di CloneData con i valori di default delle variabili da
-     * sovrascrivere.
+     * Crea un'istanza di ResourceInstance con i valori di default delle
+     * variabili da sovrascrivere.
      *
      * @param name Il nome della risorsa:e.g. "PT201"
      * @param variableDefaults Una mappa di: "Nome Var - Valore Def"
      * @return Restituisce {@code true} se la risorsa è stata creata
      */
-    public boolean createCloneData(String name, Map<String, String> variableDefaults) {
+    public boolean createResourceInstance(String name, Map<String, String> variableDefaults) {
         if (name == null || name.isBlank()) {
             return false;
         }
-        CloneData cd = CloneHandler.createCloneData(name, variableDefaults);
+        ResourceInstance cd = ResourceInstanceHandler.createCloneData(name, variableDefaults);
         if (projectData.containsKey(name)) {
-            CloneData get = projectData.get(name);
+            ResourceInstance get = projectData.get(name);
             if (variableDefaults == null || variableDefaults.isEmpty()) {
-                CloneHandler.clearCloneData(get);
+                ResourceInstanceHandler.clearResourceInstance(get);
             } else {
-                CloneHandler.transferToCloneData(get, cd);
+                ResourceInstanceHandler.transferToResourceInstance(get, cd);
             }
         } else {
             projectData.put(name, cd);
@@ -172,22 +172,36 @@ public class Project implements Serializable {
     }
 
     /**
-     * Collega una CloneData ad una risorsa del progetto.
+     * Collega una ResourceInstance ad una risorsa del progetto.
      *
-     * @param cd La CloneData da collegare
+     * @param cd La ResourceInstance da collegare
      * @param re La risorsa a cui collegare il dato
      * @return
      */
-    public boolean bindCloneData(String cdName, ResourceElement re) {
-        if (cdName == null || cdName.isBlank() || re == null) {
+    public boolean bindResourceInstance(String name, ResourceElement re) {
+        if (name == null || name.isBlank() || re == null) {
             return false;
         }
-        ResourceCloneList get = instances.get(re);
+        ResourceInstanceList get = instances.get(re);
         if (get == null) {
             return false;
         }
-        CloneData cd = projectData.get(cdName);
-        return CloneHandler.addCloneData(get, cd);
+        ResourceInstance cd = projectData.get(name);
+        return ResourceInstanceHandler.addResourceInstance(get, cd);
+    }
+
+    /**
+     * Permette di recuperare, se esiste, un'istanza di una risorsa.
+     * @param re 
+     * @param name
+     * @return 
+     */
+    public ResourceInstance getInstance(ResourceElement re, String name) {
+        ResourceInstanceList list = instances.get(re);
+        if (list == null) {
+            return null;
+        }
+        return list.getInstances().get(name);
     }
 
     /**
@@ -203,9 +217,9 @@ public class Project implements Serializable {
         if (re == null || !instances.containsKey(re)) {
             return new ArrayList<>();
         }
-        ResourceCloneList get = instances.get(re);
+        ResourceInstanceList get = instances.get(re);
         List<String> binded = new ArrayList<>();
-        binded.addAll(get.getClones().keySet());
+        binded.addAll(get.getInstances().keySet());
         return binded;
     }
 

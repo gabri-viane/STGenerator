@@ -11,11 +11,12 @@ import net.vnleng.generator.data.Project;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.vnleng.generator.commons.Pair;
 import net.vnleng.generator.commons.events.EventHandlerList;
 import net.vnleng.generator.commons.events.GenericEventHandler;
+import net.vnleng.generator.data.content.ResourceInstance;
 import net.vnleng.generator.data.ints.res.ResourceElement;
 import net.vnleng.generator.data.serialization.ProjectSerializer;
+import net.vnleng.generator.data.shared.listeners.DataListener;
 import net.vnleng.generator.data.shared.listeners.ProjectListener;
 
 /**
@@ -27,14 +28,12 @@ public class SharedData {
     private final EventHandlerList<Project, ProjectListener> projectOpenedEventListeners;
     private final EventHandlerList<Project, ProjectListener> projectClosedEventListeners;
     private final EventHandlerList<Project, ProjectListener> projectEditedEventListeners;
-
-    //private final List<SharedDataChangeListener<Project>> projectOpenedEventListeners;
-    //private final List<SharedDataChangeListener<Project>> projectClosedEventListeners;
-    //private final List<SharedDataChangeListener<Project>> projectEditedEventListeners;
-    private final List<SharedDataChangeListener<Pair<String, ResourceElement>>> cloneDataChangedEventListeners;
+    private final EventHandlerList<ResourceInstance, DataListener> instanceBindedEventListeners;
+    private final EventHandlerList<ResourceInstance, DataListener> instanceCreatedEventListeners;
+    private final EventHandlerList<ResourceInstance, DataListener> instanceRemovedEventListeners;
     private final List<SharedDataChangeListener<SharedData>> saveEventListeners;
-    private boolean hasBeenEdited = false;
 
+    private boolean hasBeenEdited = false;
     private boolean hasFileAssocieted = false;
     private String filePath = null;
 
@@ -44,7 +43,9 @@ public class SharedData {
         this.projectOpenedEventListeners = new EventHandlerList<>();
         this.projectClosedEventListeners = new EventHandlerList<>();
         this.projectEditedEventListeners = new EventHandlerList<>();
-        this.cloneDataChangedEventListeners = new ArrayList<>();
+        this.instanceBindedEventListeners = new EventHandlerList<>();
+        this.instanceCreatedEventListeners = new EventHandlerList<>();
+        this.instanceRemovedEventListeners = new EventHandlerList<>();
         this.saveEventListeners = new ArrayList<>();
     }
 
@@ -75,8 +76,17 @@ public class SharedData {
         return handler;
     }
 
-    public void addCloneDataChangedEventListener(SharedDataChangeListener<Pair<String, ResourceElement>> listener) {
-        this.cloneDataChangedEventListeners.add(listener);
+    public GenericEventHandler<ResourceInstance, DataListener> addResourceInstanceListener(DataListener.DataEventType type) {
+        GenericEventHandler<ResourceInstance, DataListener> handler = new GenericEventHandler<>();
+        switch (type) {
+            case INSTANTIATED ->
+                this.instanceBindedEventListeners.addHandler(handler);
+            case CREATED ->
+                this.instanceCreatedEventListeners.addHandler(handler);
+            case REMOVED ->
+                this.instanceRemovedEventListeners.addHandler(handler);
+        }
+        return handler;
     }
 
     public void addSaveEventListener(SharedDataChangeListener<SharedData> listener) {
@@ -126,7 +136,8 @@ public class SharedData {
     }
 
     /**
-     * Permette di creare, ed in caso associare ad una risorsa, una CloneData.
+     * Permette di creare, ed in caso associare ad una risorsa, una
+     * ResourceInstance.
      *
      * @param re Se {@code re != null} allora viene registrata la clone data
      * alla risorsa.
@@ -141,20 +152,19 @@ public class SharedData {
         if (name == null || name.isBlank()) {
             return false;
         }
-        Pair<String, ResourceElement> data = new Pair<>(name, re);
-        boolean result = p.createCloneData(name, values);
+        boolean result = p.createResourceInstance(name, values);
+        ResourceInstance ri = p.getInstance(re, name);
         if (re == null || !result) {
             if (result) {
                 hasBeenEdited = true;
-                cloneDataChangedEventListeners.forEach(t -> t.callback(data));
                 projectEditedEventListeners.handle(p);
             }
             return result;
         }
-        result = p.bindCloneData(name, re);
+        result = p.bindResourceInstance(name, re);
         if (result) {
             hasBeenEdited = true;
-            cloneDataChangedEventListeners.forEach(t -> t.callback(data));
+            instanceBindedEventListeners.handle(ri);
             projectEditedEventListeners.handle(p);
         }
         return result;
